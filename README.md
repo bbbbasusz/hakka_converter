@@ -14,3 +14,8 @@
 idˋ zagˋ iung di hagˋ gaˊ ngiˊ vunˇ sii hanˇ go loˇ maˊ sii zonˋ von ge miongˋ iab gungˊ kiˋ, zo dedˋ lauˊ hagˋ gaˊ hon sii ia he loˇ maˊ sii zonˋ von zo hagˋ gaˊ ngiˊ pinˊ imˊ fongˊ on 、 pag fa sii 、 guedˋ ji imˊ peuˊ 、 xiˊ liˊ ngiˊ sii muˊ 、 honˇ vunˇ 、 pa laˊ tid ne tungˋ denˋ giˋ haˊ zung zonˋ xiaˋ hinˇ siidˋ. loiˇ ziiˊ ienˇ xi ien 、 hoiˋ liug fongˊ ngienˇ, hanˇ iuˊ doˊ imˊ sii ge tug imˊ xienˋ ced. 
 
 🔗 **xien song siiˋ iung：** https://bbbbasusz.github.io/hakka_converter/
+
+# hagˋ gaˊ ngiˊ zonˋ von hi
+idˋ zagˋ iung di hagˋ gaˊ ngiˊ vunˇ sii hanˇ go loˇ maˊ sii zonˋ von ge miongˋ iab gungˊ kiˋ, zo dedˋ lauˊ hagˋ gaˊ hon sii ia he loˇ maˊ sii zonˋ von zo hagˋ gaˊ ngiˊ pinˊ imˊ fongˊ on 、 pag fa sii 、 guedˋ ji imˊ peuˊ 、 xiˊ liˊ ngiˊ sii muˊ 、 honˇ vunˇ 、 pa laˊ tid ne tungˋ denˋ giˋ haˊ zung zonˋ xiaˋ hinˇ siidˋ. loiˇ ziiˊ ienˇ xi ien 、 hoiˋ liug fongˊ ngienˇ, hanˇ iuˊ doˊ imˊ sii ge tug imˊ xienˋ ced. 
+
+🔗 **xien song siiˋ iung：** https://bbbbasusz.github.io/hakka_converter/
