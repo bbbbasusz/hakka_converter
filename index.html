@@ -392,6 +392,15 @@
           <label class="switch"><input type="checkbox" id="toneToggle"><span class="slider"></span></label>
           <span class="ctrl-label" style="font-size:0.7rem;opacity:0.8">(ˊˇˋˉ)</span>
         </div>
+        <div class="ctrl-group">
+          <span class="ctrl-label">Геотопонимы</span>
+          <label class="switch"><input type="checkbox" id="placeToggle"><span class="slider"></span></label>
+          <span class="ctrl-label" style="font-size:0.7rem;opacity:0.8">省/縣/鄉/路…</span>
+        </div>
+        <div class="ctrl-group">
+          <span class="ctrl-label">Пробелы между слогами</span>
+          <label class="switch"><input type="checkbox" id="spaceToggle" checked><span class="slider"></span></label>
+        </div>
       </div>
       <div class="pfs-badge" id="pfsBadge" title="Обнаружена церковная романизация (Pha̍k-fa-sṳ). Дефис «-» в MoE становится пробелом.">
         <span class="pfs-onair">ON AIR</span>
@@ -29143,10 +29152,231 @@ function convertExtraFromCyrLike(cyrText, script) {
 }
 
 
+
+/* ===== Place-name (геотопонимы) — same rules as Palladius converter ===== */
+const PLACE_ELEMENTS_HAKKA = [
+  { ru: "автономный район", han: ["自治区"] },
+  { ru: "автономный округ", han: ["自治州"] },
+  { ru: "автономный уезд", han: ["自治县","自治縣"] },
+  { ru: "особый административный район", han: ["特别行政区","特別行政區"] },
+  { ru: "город центрального подчинения", han: ["直辖市","直轄市"] },
+  { ru: "провинция", han: ["省"] },
+  { ru: "город", han: ["市"] },
+  { ru: "уезд", han: ["县","縣"] },
+  { ru: "район", han: ["区","區"] },
+  { ru: "посёлок", han: ["镇","鎮"] },
+  { ru: "волость", han: ["乡","鄉"] },
+  { ru: "улица", han: ["街道"] },
+  { ru: "проспект", han: ["大道"] },
+  { ru: "улица", han: ["路"] },
+  { ru: "улица", han: ["街"] },
+  { ru: "переулок", han: ["巷"] },
+  { ru: "переулок", han: ["弄"] },
+  { ru: "деревня", han: ["村"] },
+  { ru: "деревня", han: ["里"], endOnly: true },
+  { ru: "деревня", han: ["庄","莊"] },
+  { ru: "соседство", han: ["邻","鄰"] },
+  { ru: "№", han: ["号","號"] },
+  { ru: "аймак", han: ["盟"] },
+  { ru: "хошун", han: ["旗"] },
+  { ru: "сомон", han: ["苏木","蘇木"] },
+  { ru: "лесной район", han: ["林区","林區"] }
+];
+const DIRECTION_MAP_HAKKA = {
+  "东": "Восточный", "西": "Западный", "南": "Южный", "北": "Северный", "中": "Центральный",
+  "東": "Восточный"
+};
+
+/**
+ * Left-to-right: find place-element starting at index `start`.
+ * Longer Hanzi forms first. 里 is endOnly (only if rest of string is empty after it
+ * or only followed by 邻/號/numbers — handled by caller via atEnd flag).
+ */
+function matchPlaceAtHakka(chars, start, atEnd) {
+  const rest = chars.slice(start).join('');
+  if (!rest) return null;
+  for (const el of PLACE_ELEMENTS_HAKKA) {
+    if (el.endOnly && !atEnd) continue;
+    for (const h of el.han) {
+      if (rest.startsWith(h)) {
+        return { el, len: Array.from(h).length };
+      }
+    }
+  }
+  return null;
+}
+
+/** Arabic digits → Chinese numerals in parentheses, e.g. 69 → (六九) or better 六十九 */
+function arabicToChineseParen(numStr) {
+  const dig = ['零','一','二','三','四','五','六','七','八','九'];
+  // simple: convert digit-by-digit for multi-digit, special cases for 10, 100
+  const n = parseInt(numStr.replace(/[^0-9]/g, ''), 10);
+  if (isNaN(n)) return '(' + numStr + ')';
+  function toCn(x) {
+    if (x < 10) return dig[x];
+    if (x < 20) return '十' + (x === 10 ? '' : dig[x % 10]);
+    if (x < 100) {
+      const t = Math.floor(x / 10), o = x % 10;
+      return dig[t] + '十' + (o ? dig[o] : '');
+    }
+    if (x < 1000) {
+      const h = Math.floor(x / 100), r = x % 100;
+      return dig[h] + '百' + (r ? (r < 10 ? '零' + dig[r] : toCn(r)) : '');
+    }
+    // fallback digit-by-digit
+    return String(x).split('').map(d => dig[+d] || d).join('');
+  }
+  // for hyphenated 60-3 → 六十-三 style per part
+  if (/[\-－]/.test(numStr)) {
+    return '(' + numStr.split(/[\-－]/).map(p => {
+      const v = parseInt(p, 10);
+      return isNaN(v) ? p : toCn(v);
+    }).join('－') + ')';
+  }
+  return '(' + toCn(n) + ')';
+}
+
+/**
+ * Build Russian place-name gloss from Hanzi line (left-to-right).
+ * 嘉義縣阿里山鄉樂野村 → уезд …, волость …, деревня …
+ */
+function buildPlaceGloss(hanziLine, nameConverter) {
+  const chars = Array.from(hanziLine);
+  // Build stream of tokens: hanzi runs and number runs
+  const stream = []; // {type:'han'|'num'|'other', text}
+  let i = 0;
+  while (i < chars.length) {
+    if (/[\u4e00-\u9fff]/.test(chars[i])) {
+      let s = '';
+      while (i < chars.length && /[\u4e00-\u9fff]/.test(chars[i])) s += chars[i++];
+      stream.push({ type: 'han', text: s });
+    } else if (/[0-9]/.test(chars[i])) {
+      let s = '';
+      while (i < chars.length && /[0-9\-－]/.test(chars[i])) s += chars[i++];
+      stream.push({ type: 'num', text: s });
+    } else {
+      stream.push({ type: 'other', text: chars[i++] });
+    }
+  }
+
+  // Work on concatenated hanzi only for place peel, but re-insert nums after
+  const hanChars = [];
+  const hanOrigins = []; // map han index → stream index
+  stream.forEach((tok, si) => {
+    if (tok.type === 'han') {
+      for (const ch of tok.text) {
+        hanOrigins.push(si);
+        hanChars.push(ch);
+      }
+    }
+  });
+  if (!hanChars.length) return null;
+
+  // Left-to-right place element scan
+  const boundaries = []; // { el, start, end }
+  let pos = 0;
+  while (pos < hanChars.length) {
+    // atEnd for 里: no more high-tier elements after?
+    const restAfter = hanChars.slice(pos).join('');
+    const atEnd = !/[县縣市省区區乡镇鎮乡村]/.test(restAfter.slice(1)); // rough
+    const m = matchPlaceAtHakka(hanChars, pos, pos + 1 >= hanChars.length || atEnd);
+    if (m) {
+      // element at pos — name is from previous cursor
+      boundaries.push({ el: m.el, start: pos, end: pos + m.len, isEl: true });
+      pos += m.len;
+    } else {
+      pos++;
+    }
+  }
+  if (!boundaries.length) return null;
+
+  // Rebuild segments: names between elements
+  const segments = [];
+  let cursor = 0;
+  for (const b of boundaries) {
+    const nameChars = hanChars.slice(cursor, b.start);
+    if (nameChars.length === 1 && DIRECTION_MAP_HAKKA[nameChars[0]]) {
+      segments.push(DIRECTION_MAP_HAKKA[nameChars[0]] + ' ' + b.el.ru);
+    } else if (nameChars.length || b.el.ru === '№' || b.el.ru === 'соседство') {
+      const nameStr = nameChars.join('');
+      let nameCyr = nameStr && nameConverter ? nameConverter(nameStr) : '';
+      if (nameCyr) {
+        nameCyr = nameCyr.charAt(0).toUpperCase() + nameCyr.slice(1);
+        segments.push(b.el.ru + ' ' + nameCyr);
+      } else if (!nameStr && (b.el.ru === '№' || b.el.ru === 'соседство')) {
+        segments.push(b.el.ru);
+      } else if (nameStr) {
+        segments.push(b.el.ru + ' ' + nameStr);
+      } else {
+        segments.push(b.el.ru);
+      }
+    }
+    cursor = b.end;
+  }
+  if (cursor < hanChars.length) {
+    const rest = hanChars.slice(cursor).join('');
+    let restCyr = nameConverter ? nameConverter(rest) : rest;
+    if (restCyr) {
+      restCyr = restCyr.charAt(0).toUpperCase() + restCyr.slice(1);
+      segments.push(restCyr);
+    }
+  }
+
+  // Attach numbers from original: after 邻/號 prefer "соседство 2 (二)", "№ 69 (六十九)"
+  // Also ensure space between hanzi-derived text and numbers
+  let result = segments.join(', ');
+  // Post-process number tokens in original line
+  const numParts = [];
+  for (const tok of stream) {
+    if (tok.type === 'num') {
+      numParts.push(tok.text + ' ' + arabicToChineseParen(tok.text));
+    }
+  }
+  // If we have соседство / № without numbers in segments, try to fill from numParts
+  // Simpler: append numbers that appear in the original after the last place name
+  // Rebuild using stream order for 邻/號 + numbers
+  // For reliability, do a second pass on original line for 数字鄰/號 patterns
+  result = result.replace(/соседство(?!\s*\d)/g, () => {
+    return 'соседство'; // filled below
+  });
+  // Pattern: N鄰 → соседство N (cn), N號 → № N (cn)
+  let extra = '';
+  const reLin = /([0-9\-－]+)\s*[邻鄰]/g;
+  const reHao = /([0-9\-－]+)\s*[号號]/g;
+  let mm;
+  const used = new Set();
+  while ((mm = reLin.exec(hanziLine)) !== null) {
+    used.add(mm[1]);
+    // replace bare соседство with numbered form if present
+    if (result.includes('соседство') && !/соседство\s+\d/.test(result)) {
+      result = result.replace('соседство', 'соседство ' + mm[1] + ' ' + arabicToChineseParen(mm[1]));
+    } else if (!result.includes('соседство ' + mm[1])) {
+      result += ', соседство ' + mm[1] + ' ' + arabicToChineseParen(mm[1]);
+    }
+  }
+  while ((mm = reHao.exec(hanziLine)) !== null) {
+    if (result.includes('№') && !/№\s+\d/.test(result)) {
+      result = result.replace(/№(?!\s*\d)/, '№ ' + mm[1] + ' ' + arabicToChineseParen(mm[1]));
+    } else if (!result.includes('№ ' + mm[1])) {
+      result += ', № ' + mm[1] + ' ' + arabicToChineseParen(mm[1]);
+    }
+  }
+  // Space before any remaining glued numbers: letter/digit boundary
+  result = result.replace(/([\u0400-\u04FF\u4e00-\u9fff])(\d)/g, '$1 $2');
+  return result;
+}
+
+
 function convert() {
   const raw = document.getElementById('input').value;
   const ids = ['ipa','cyr','dut','esp','port','ben'];
   const clearIds = ['ipa','cyr','dut','esp','port','ben','pfs','palladium','extra','hangul'];
+  // Sync syllable spacing switch → currentMode
+  const spaceOn = document.getElementById('spaceToggle');
+  if (spaceOn) {
+    if (!spaceOn.checked) currentMode = 'no-space';
+    else if (currentMode === 'no-space') currentMode = 'force-space';
+  }
   if (!raw.trim()) {
     document.getElementById('out-roman').textContent = '';
     clearIds.forEach(id => {
@@ -29211,10 +29441,38 @@ function convert() {
   if (pfsEl) pfsEl.textContent = pfsLines.join('\n');
 
   // Palladium: approximate from existing Cyrillic (custom Hakka) with light adjustments
-  const cyrJoined = results.cyr.join('\n');
-  const palladium = cyrJoined
+  let cyrJoined = results.cyr.join('\n');
+  let palladium = cyrJoined
     .replace(/дз/g,'цз').replace(/тш/g,'ч').replace(/дж/g,'чж')
     .replace(/щ/g,'с').replace(/н̩/g,'н').replace(/м̩/g,'м');
+
+  // Place-name mode: rewrite Cyrillic / Palladium with semantic geo labels
+  const placeOn = document.getElementById('placeToggle') && document.getElementById('placeToggle').checked;
+  if (placeOn && containsHanzi(raw)) {
+    const nameToCyr = (hanName) => {
+      if (!hanName) return '';
+      const segs = hanziToRoman(hanName);
+      const roman = segs.map(s => s.text).join(currentMode === 'no-space' ? '' : ' ');
+      const r = convertRomanLine(roman.replace(/\s+/g, ' ').trim());
+      return (r.cyr || '').replace(/\s+/g, currentMode === 'no-space' ? '' : ' ');
+    };
+    const glossLines = raw.split(/\r?\n/).map(line => {
+      const gloss = buildPlaceGloss(line, nameToCyr);
+      return gloss; // null if no place elements
+    });
+    if (glossLines.every(g => g !== null)) {
+      cyrJoined = glossLines.join('\n');
+      palladium = cyrJoined;
+    } else if (glossLines.some(g => g !== null)) {
+      // mix: use gloss where available
+      const cyrLines = cyrJoined.split('\n');
+      cyrJoined = glossLines.map((g, i) => g !== null ? g : (cyrLines[i] || '')).join('\n');
+      palladium = cyrJoined;
+    }
+  }
+
+  const cyrEl = document.getElementById('out-cyr');
+  if (cyrEl) cyrEl.textContent = cyrJoined;
   const palEl = document.getElementById('out-palladium');
   if (palEl) palEl.textContent = palladium;
 
@@ -29261,6 +29519,8 @@ document.querySelectorAll('.mode-btn').forEach(btn => {
     document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     currentMode = btn.dataset.mode;
+    const st = document.getElementById('spaceToggle');
+    if (st) st.checked = currentMode !== 'no-space';
     convert();
   });
 });
@@ -29279,17 +29539,52 @@ document.getElementById('toneToggle').addEventListener('change', e => {
   showTone = e.target.checked;
   convert();
 });
+const placeToggleEl = document.getElementById('placeToggle');
+if (placeToggleEl) placeToggleEl.addEventListener('change', () => convert());
+const spaceToggleEl = document.getElementById('spaceToggle');
+if (spaceToggleEl) spaceToggleEl.addEventListener('change', e => {
+  currentMode = e.target.checked ? 'force-space' : 'no-space';
+  // sync mode buttons UI
+  document.querySelectorAll('.mode-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === currentMode);
+  });
+  convert();
+});
 document.querySelectorAll('.copy-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     const target = document.getElementById(btn.dataset.target);
     if (!target) return;
     const text = target.textContent || target.innerText || '';
     if (!text.trim()) return;
-    navigator.clipboard.writeText(text).then(() => {
-      const t = btn.textContent;
+    const done = () => {
+      const label = btn.textContent;
       btn.textContent = 'Скопировано!';
-      setTimeout(() => btn.textContent = t, 1100);
-    });
+      setTimeout(() => { btn.textContent = label; }, 1100);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(() => {
+        // fallback for file:// or denied permission
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); done(); }
+        catch (e) { btn.textContent = 'Ошибка'; setTimeout(() => btn.textContent = 'Копировать', 1100); }
+        document.body.removeChild(ta);
+      });
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); done(); }
+      catch (e) { btn.textContent = 'Ошибка'; setTimeout(() => btn.textContent = 'Копировать', 1100); }
+      document.body.removeChild(ta);
+    }
   });
 });
 const extraSel = document.getElementById('extraScriptSelect');
