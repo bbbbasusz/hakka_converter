@@ -297,12 +297,22 @@
       font-family: "Cormorant Unicase", "Literata", "Gowun Batang", "Noto Serif TC", Georgia, serif;
       font-size: 0.82rem; font-weight: 600; letter-spacing: 0.06em;
       color: var(--cinnabar);
-      line-height: 1.25;
+      line-height: 1.3;
       flex: 1 1 auto;
       min-width: 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      white-space: normal;
+      overflow: visible;
+      display: flex; flex-direction: column; gap: 0.1rem;
+    }
+    .out-label .ru-line { display: block; }
+    .out-label .hak-line {
+      display: block; font-size: 0.72rem; font-weight: 500;
+      color: var(--muted); letter-spacing: 0.03em;
+      font-family: "Noto Serif TC", "Gowun Batang", serif;
+    }
+    .out-head {
+      height: auto !important; min-height: 3.1rem; max-height: none !important;
+      padding-top: 0.45rem; padding-bottom: 0.45rem;
     }
     .out-head .copy-btn,
     .out-head select {
@@ -390,7 +400,7 @@
         <div class="ctrl-group">
           <span class="ctrl-label">Тоны</span>
           <label class="switch"><input type="checkbox" id="toneToggle"><span class="slider"></span></label>
-          <span class="ctrl-label" style="font-size:0.7rem;opacity:0.8">(ˊˇˋˉ)</span>
+          <span class="ctrl-label" style="font-size:0.7rem;opacity:0.8">(ˊˇˋˉ(⁺ˆ))</span>
         </div>
         <div class="ctrl-group">
           <span class="ctrl-label">Геотопонимы</span>
@@ -401,6 +411,10 @@
           <span class="ctrl-label">Пробелы между слогами</span>
           <label class="switch"><input type="checkbox" id="spaceToggle" checked><span class="slider"></span></label>
         </div>
+        <div class="ctrl-group">
+          <span class="ctrl-label">Цифры → (…)</span>
+          <label class="switch"><input type="checkbox" id="numParenToggle"><span class="slider"></span></label>
+        </div>
       </div>
       <div class="pfs-badge" id="pfsBadge" title="Обнаружена церковная романизация (Pha̍k-fa-sṳ). Дефис «-» в MoE становится пробелом.">
         <span class="pfs-onair">ON AIR</span>
@@ -409,7 +423,7 @@
         <span>«-» → пробел</span>
       </div>
       <div class="out-head" style="border-top:1px solid #efe6d8;background:#faf6f0;">
-        <span class="out-label">Образовательная романизация (MoE) / 客家語拼音方案 Hagˋ gaˊ ngiˊ pinˊ imˊ fongˊ onˉ</span>
+        <span class="out-label"><span class="ru-line">Образовательная романизация (MoE)</span><span class="hak-line">客家語拼音方案 Hagˋ gaˊ ngiˊ pinˊ imˊ fongˊ onˉ</span></span>
         <button type="button" class="copy-btn" data-target="out-roman" id="copyRomanBtn">Копировать</button>
       </div>
       <div class="roman-box" id="out-roman"></div>
@@ -418,63 +432,63 @@
     <div class="outputs">
       <div class="out-card">
         <div class="out-head">
-          <span class="out-label">Церковная романизация / 白話字 Pagˉ faˉ siiˉ</span>
+          <span class="out-label"><span class="ru-line">Церковная романизация</span><span class="hak-line">白話字 Pagˉ faˉ siiˉ</span></span>
           <button type="button" class="copy-btn" data-target="out-pfs">Копировать</button>
         </div>
         <div class="out-body" id="out-pfs"></div>
       </div>
       <div class="out-card">
         <div class="out-head">
-          <span class="out-label">МФА / 國際音標 Guedˋ jiˉ imˊ peuˊ</span>
+          <span class="out-label"><span class="ru-line">МФА</span><span class="hak-line">國際音標 Guedˋ jiˉ imˊ peuˊ</span></span>
           <button type="button" class="copy-btn" data-target="out-ipa">Копировать</button>
         </div>
         <div class="out-body ipa" id="out-ipa"></div>
       </div>
       <div class="out-card">
         <div class="out-head">
-          <span class="out-label hangul-label">Хангыль / 韓國語 Honˇ guedˋ ngiˊ</span>
+          <span class="out-label hangul-label"><span class="ru-line">Хангыль</span><span class="hak-line">韓國語 Honˇ guedˋ ngiˊ</span></span>
           <button type="button" class="copy-btn" data-target="out-hangul">Копировать</button>
         </div>
         <div class="out-body hangul-body" id="out-hangul"></div>
       </div>
       <div class="out-card">
         <div class="out-head">
-          <span class="out-label">Кириллица / 西里爾 Xiˊ liˊ ngiˋ</span>
+          <span class="out-label"><span class="ru-line">Кириллица</span><span class="hak-line">西里爾 Xiˊ liˊ ngiˋ</span></span>
           <button type="button" class="copy-btn" data-target="out-cyr">Копировать</button>
         </div>
         <div class="out-body" id="out-cyr"></div>
       </div>
       <div class="out-card">
         <div class="out-head">
-          <span class="out-label">Система палладия / 西里爾(巴拉第) Xiˊ liˊ ngiˋ (Baˊ laˊ tiˉ)</span>
+          <span class="out-label"><span class="ru-line">Система палладия</span><span class="hak-line">西里爾(巴拉第) Xiˊ liˊ ngiˋ (Baˊ laˊ tiˉ)</span></span>
           <button type="button" class="copy-btn" data-target="out-palladium">Копировать</button>
         </div>
         <div class="out-body" id="out-palladium"></div>
       </div>
       <div class="out-card">
         <div class="out-head">
-          <span class="out-label">Голландский / 荷蘭語 Hoˇ lanˇ ngiˊ</span>
+          <span class="out-label"><span class="ru-line">Голландский</span><span class="hak-line">荷蘭語 Hoˇ lanˇ ngiˊ</span></span>
           <button type="button" class="copy-btn" data-target="out-dut">Копировать</button>
         </div>
         <div class="out-body" id="out-dut"></div>
       </div>
       <div class="out-card">
         <div class="out-head">
-          <span class="out-label">Испанский / 西班牙語 Xiˊ banˊ ngaˇ ngiˊ</span>
+          <span class="out-label"><span class="ru-line">Испанский</span><span class="hak-line">西班牙語 Xiˊ banˊ ngaˇ ngiˊ</span></span>
           <button type="button" class="copy-btn" data-target="out-esp">Копировать</button>
         </div>
         <div class="out-body" id="out-esp"></div>
       </div>
       <div class="out-card">
         <div class="out-head">
-          <span class="out-label">Португальский / 葡萄牙語 Puˇ toˇ ngaˇ ngiˊ</span>
+          <span class="out-label"><span class="ru-line">Португальский</span><span class="hak-line">葡萄牙語 Puˇ toˇ ngaˇ ngiˊ</span></span>
           <button type="button" class="copy-btn" data-target="out-port">Копировать</button>
         </div>
         <div class="out-body" id="out-port"></div>
       </div>
       <div class="out-card" style="grid-column: 1 / -1;">
         <div class="out-head">
-          <span class="out-label">Доп. скрипт / 其他 kiˇ taˊ</span>
+          <span class="out-label"><span class="ru-line">Доп. скрипт</span><span class="hak-line">其他 kiˇ taˊ</span></span>
           <select id="extraScriptSelect" style="font-size:0.78rem;padding:0.2rem 0.5rem;border-radius:6px;border:1px solid #e0d5c5;background:#fff;color:var(--ink);font-family:inherit;">
             <option value="ben">Бенгальский / 孟加拉語 Menˉ gaˊ laˊ ngiˊ</option>
             <option value="thai">Тайский / 泰語 Taiˉ ngiˊ</option>
@@ -28347,13 +28361,13 @@ function hanziToRoman(raw) {
       });
       i += m.len;
       if (i < raw.length && /[\u4e00-\u9fff□]/.test(raw[i])) {
-        segments.push({ type: 'text', text: ' ' });
+        if (currentMode !== 'no-space') segments.push({ type: 'text', text: ' ' });
       }
     } else {
       segments.push({ type: 'text', text: ch });
       i++;
       if (i < raw.length && /[\u4e00-\u9fff□]/.test(raw[i])) {
-        segments.push({ type: 'text', text: ' ' });
+        if (currentMode !== 'no-space') segments.push({ type: 'text', text: ' ' });
       }
     }
   }
@@ -28527,14 +28541,15 @@ function splitIntoSyllables(text) {
   const syllables = [];
   let i = 0, len = rawLower.length;
   const onsetList = ['ny','ngw','ng','zh','ch','sh','rh','gw','kw','b','p','m','f','v','d','t','n','l','g','k','h','z','j','c','q','s','x','w','r','y'];
-  const preferredOnset = ['b','d','g','n','m','ng'];
+  // Only sonorants may be resyllabified as next onset (NOT checked stops b/d/g)
+  const preferredOnset = ['n','m','ng'];
   while (i < len) {
-    let onset = '', matched = false;
+    let onset = '';
     for (const cand of onsetList) {
-      if (rawLower.startsWith(cand, i)) { onset = cand; i += cand.length; matched = true; break; }
+      if (rawLower.startsWith(cand, i)) { onset = cand; i += cand.length; break; }
     }
     let core = '', foundCore = false;
-    for (let l = 4; l >= 1; l--) {
+    for (let l = 6; l >= 1; l--) {
       if (i + l <= len) {
         const candClean = rawLower.substring(i, i + l).replace(TONE_REGEX, '');
         if (vowels[candClean]) { core = rawLower.substring(i, i + l); i += l; foundCore = true; break; }
@@ -28544,6 +28559,7 @@ function splitIntoSyllables(text) {
     if (core === '' && ['m','n','ng'].includes(onset)) { core = onset; onset = ''; }
     syllables.push({ onset, core });
   }
+  // Sonorant resyllabification only
   for (let j = 0; j < syllables.length - 1; j++) {
     const cur = syllables[j], next = syllables[j + 1];
     if (!cur.core || next.onset !== '') continue;
@@ -28555,7 +28571,25 @@ function splitIntoSyllables(text) {
       }
     }
   }
-  return syllables.filter(s => s.core && s.core !== '?');
+  // Split cores that embed a checked stop coda before another vowel: gidon → gid + on
+  // Hakka orthography: -b -d -g are unreleased -p -t -k
+  const out = [];
+  for (const s of syllables) {
+    if (!s.core || s.core === '?') continue;
+    const clean = s.core.replace(TONE_REGEX, '');
+    const m = clean.match(/^(.*?)([bdg])([aeiouü].*)$/);
+    if (m && m[1].length > 0) {
+      // find same split in original core (preserve tone marks position approximately)
+      const idx = s.core.toLowerCase().indexOf(m[2] + m[3][0]);
+      if (idx > 0) {
+        out.push({ onset: s.onset, core: s.core.slice(0, idx + 1) });
+        out.push({ onset: '', core: s.core.slice(idx + 1) });
+        continue;
+      }
+    }
+    out.push(s);
+  }
+  return out.filter(s => s.core && s.core !== '?');
 }
 function isUFolowedByVowel(core) {
   return core.startsWith('u') && core.length > 1 && ['a','e','i','o','u','ü'].includes(core[1]);
@@ -28623,10 +28657,36 @@ function convertSequence(seq, mode) {
     if (showTone && toneMark !== 'ˉ') ben += applyTone('', toneMark, 'ben', isChecked);
     res.ben.push(ben);
   }
-  const sep = mode === 'force-space' ? ' ' : '';
+  const sep = mode === 'no-space' ? '' : ' ';
+  const CYR_V = new Set(['а','е','ё','и','о','у','ы','э','ю','я','А','Е','Ё','И','О','У','Ы','Э','Ю','Я']);
+  function joinCyrWithHardSign(arr) {
+    // ъ only when joined (no-space); spaced output never gets ъ
+    if (sep !== '') return arr.join(sep);
+    let out = '';
+    for (let i = 0; i < arr.length; i++) {
+      let s = arr[i];
+      if (i + 1 < arr.length) {
+        const base = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        const next = arr[i + 1].normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        const last2 = base.slice(-2);
+        const last = base.slice(-1);
+        if (last2 !== 'нь' && last2 !== 'Нь' && 'ктпнмКТПНМ'.includes(last) &&
+            next.length && CYR_V.has(next[0])) {
+          s += 'ъ';
+        }
+      }
+      out += s;
+    }
+    return out;
+  }
+  const ipaSep = mode === 'no-space' ? '.' : ' ';
   return {
-    ipa: res.ipa.join(sep), cyr: res.cyr.join(sep), dut: res.dut.join(sep),
-    esp: res.esp.join(sep), port: res.port.join(sep), ben: res.ben.join(sep)
+    ipa: res.ipa.join(ipaSep),
+    cyr: joinCyrWithHardSign(res.cyr),
+    dut: res.dut.join(sep),
+    esp: res.esp.join(sep),
+    port: res.port.join(sep),
+    ben: res.ben.join(sep)
   };
 }
 
@@ -28744,12 +28804,29 @@ function convertHangulLine(line){
     last = m.index + m[0].length;
   }
   if(last < line.length) parts.push({ t: 'text', c: line.slice(last) });
+  const sep = currentMode === 'no-space' ? '' : ' ';
   let out = '';
   for(const p of parts){
-    if(p.t === 'text') out += p.c;
-    else out += convertHakkaToHangul(p.c);
+    if(p.t === 'text') {
+      // preserve intentional spaces between roman syllables; drop only if no-space
+      out += (currentMode === 'no-space' && /^\s+$/.test(p.c)) ? sep : p.c;
+      continue;
+    }
+    // Always split into syllables first so coda never bleeds into next onset
+    const { base, tones } = extractTonesFromToken(p.c);
+    const syls = splitIntoSyllables(base);
+    const hangulSyls = [];
+    for (let i = 0; i < syls.length; i++) {
+      const onset = syls[i].onset || '';
+      const core = syls[i].core || '';
+      const tone = tones[i] || '';
+      const piece = onset + core + (tone && showTone ? tone : '');
+      hangulSyls.push(convertHakkaToHangul(piece || p.c));
+    }
+    out += hangulSyls.filter(Boolean).join(sep);
   }
-  return out.replace(/\s+/g,'');
+  if (currentMode === 'no-space') out = out.replace(/\s+/g, '');
+  return out;
 }
 function convertRomanLine(line) {
   if (!line.trim()) return { ipa: '', cyr: '', dut: '', esp: '', port: '', ben: '' };
@@ -28762,15 +28839,51 @@ function convertRomanLine(line) {
   }
   if (last < line.length) parts.push({ t: 'text', c: line.slice(last) });
   const acc = { ipa: [], cyr: [], dut: [], esp: [], port: [], ben: [] };
+  const CYR_V2 = new Set(['а','е','ё','и','о','у','ы','э','ю','я','А','Е','Ё','И','О','У','Ы','Э','Ю','Я']);
+  const joinedMode = currentMode === 'no-space';
+  let prevCyrEndsConsonant = null;
+  let prevWasSeq = false;
   for (const p of parts) {
     if (p.t === 'text') {
-      for (const k of Object.keys(acc)) acc[k].push(p.c);
+      if (joinedMode) {
+        // IPA: syllable boundary marker '.' instead of spaces
+        const ipaBit = /\S/.test(p.c) ? p.c : (prevWasSeq ? '.' : '');
+        acc.ipa.push(ipaBit);
+        // other scripts: drop pure whitespace when joining
+        const otherBit = /\S/.test(p.c) ? p.c : '';
+        for (const k of ['cyr','dut','esp','port','ben']) acc[k].push(otherBit);
+      } else {
+        for (const k of Object.keys(acc)) acc[k].push(p.c);
+      }
+      if (!/\S/.test(p.c) && p.c.length > 0) prevCyrEndsConsonant = null;
+      if (/\S/.test(p.c)) prevWasSeq = false;
     } else {
       const r = convertSequence(p.c, currentMode);
+      if (joinedMode && prevCyrEndsConsonant && r.cyr) {
+        const start = r.cyr.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        if (start.length && CYR_V2.has(start[0])) {
+          let idx = acc.cyr.length - 1;
+          while (idx >= 0 && /^\s*$/.test(acc.cyr[idx])) idx--;
+          if (idx >= 0) acc.cyr[idx] = acc.cyr[idx] + 'ъ';
+        }
+      }
+      // Adjacent sequences with no text between: IPA still needs '.'
+      if (joinedMode && prevWasSeq) {
+        acc.ipa.push('.');
+      }
       for (const k of Object.keys(acc)) acc[k].push(r[k]);
+      const base = (r.cyr || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const last2 = base.slice(-2);
+      const lastc = base.slice(-1);
+      prevCyrEndsConsonant = (last2 !== 'нь' && last2 !== 'Нь' && 'ктпнмКТПНМ'.includes(lastc)) ? lastc : null;
+      prevWasSeq = true;
     }
   }
-  return Object.fromEntries(Object.entries(acc).map(([k, v]) => [k, v.join('')]));
+  return Object.fromEntries(Object.entries(acc).map(([k, v]) => {
+    let s = v.join('');
+    if (k === 'ipa' && joinedMode) s = s.replace(/\.+/g, '.').replace(/^\.|\.$/g, '');
+    return [k, s];
+  }));
 }
 
 function closePolyPopup() {
@@ -29155,43 +29268,122 @@ function convertExtraFromCyrLike(cyrText, script) {
 
 /* ===== Place-name (геотопонимы) — same rules as Palladius converter ===== */
 const PLACE_ELEMENTS_HAKKA = [
-  { ru: "автономный район", han: ["自治区"] },
-  { ru: "автономный округ", han: ["自治州"] },
-  { ru: "автономный уезд", han: ["自治县","自治縣"] },
-  { ru: "особый административный район", han: ["特别行政区","特別行政區"] },
-  { ru: "город центрального подчинения", han: ["直辖市","直轄市"] },
-  { ru: "провинция", han: ["省"] },
-  { ru: "город", han: ["市"] },
-  { ru: "уезд", han: ["县","縣"] },
-  { ru: "район", han: ["区","區"] },
-  { ru: "посёлок", han: ["镇","鎮"] },
-  { ru: "волость", han: ["乡","鄉"] },
-  { ru: "улица", han: ["街道"] },
-  { ru: "проспект", han: ["大道"] },
-  { ru: "улица", han: ["路"] },
-  { ru: "улица", han: ["街"] },
-  { ru: "переулок", han: ["巷"] },
-  { ru: "переулок", han: ["弄"] },
-  { ru: "деревня", han: ["村"] },
-  { ru: "деревня", han: ["里"], endOnly: true },
-  { ru: "деревня", han: ["庄","莊"] },
-  { ru: "соседство", han: ["邻","鄰"] },
-  { ru: "№", han: ["号","號"] },
-  { ru: "аймак", han: ["盟"] },
-  { ru: "хошун", han: ["旗"] },
-  { ru: "сомон", han: ["苏木","蘇木"] },
-  { ru: "лесной район", han: ["林区","林區"] }
+  // rank: higher = larger unit. Lower rank left of higher rank → name part (新莊區, 南庄鄉).
+  // labels: ru en dut esp port ko bn th ka kk az ug
+  { han:["自治区"], rank:10, label:{ ru:"автономный район", en:"autonomous region", dut:"autonome regio", esp:"región autónoma", port:"região autónoma", ko:"자치구", bn:"স্বায়ত্তশাসিত অঞ্চল", th:"เขตปกครองตนเอง", ka:"ავტონომიური რეგიონი", kk:"автономиялық аудан", az:"muxtar rayon", ug:"ئاپتونوم رايون" } },
+  { han:["自治州"], rank:9, label:{ ru:"автономный округ", en:"autonomous prefecture", dut:"autonome prefectuur", esp:"prefectura autónoma", port:"prefeitura autónoma", ko:"자치주", bn:"স্বায়ত্তশাসিত প্রশাসনিক অঞ্চল", th:"จังหวัดปกครองตนเอง", ka:"ავტონომიური ოლქი", kk:"автономиялық округ", az:"muxtar vilayət", ug:"ئاپتونوم ئوبلاست" } },
+  { han:["自治县","自治縣"], rank:8, label:{ ru:"автономный уезд", en:"autonomous county", dut:"autonome county", esp:"condado autónomo", port:"condado autónomo", ko:"자치현", bn:"স্বায়ত্তশাসিত কাউন্টি", th:"อำเภอปกครองตนเอง", ka:"ავტონომიური რაიონი", kk:"автономиялық аудан", az:"muxtar rayon", ug:"ئاپتونوم ناھىيە" } },
+  { han:["特别行政区","特別行政區"], rank:10, label:{ ru:"особый административный район", en:"SAR", dut:"speciale bestuurlijke regio", esp:"RAE", port:"RAE", ko:"특별행정구", bn:"বিশেষ প্রশাসনিক অঞ্চল", th:"เขตปกครองพิเศษ", ka:"სპეციალური ადმინისტრაციული რეგიონი", kk:"арнайы әкімшілік аудан", az:"xüsusi inzibati rayon", ug:"ئالاھىدە مەمۇرىي رايون" } },
+  { han:["直辖市","直轄市"], rank:10, label:{ ru:"город центрального подчинения", en:"municipality", dut:"gemeente", esp:"municipio", port:"município", ko:"직할시", bn:"কেন্দ্রশাসিত নগর", th:"นครปกครองโดยตรง", ka:"ცენტრალური დაქვემდებარების ქალაქი", kk:"республикалық қала", az:"mərkəzi tabeli şəhər", ug:"بىۋاسىتە قاراشلىق شەھەر" } },
+  { han:["省"], rank:10, label:{ ru:"провинция", en:"province", dut:"provincie", esp:"provincia", port:"província", ko:"성", bn:"প্রদেশ", th:"มณฑล", ka:"პროვინცია", kk:"провинция", az:"vilayət", ug:"ئۆلكە" } },
+  { han:["市"], rank:9, label:{ ru:"город", en:"city", dut:"stad", esp:"ciudad", port:"cidade", ko:"시", bn:"শহর", th:"นคร", ka:"ქალაქი", kk:"қала", az:"şəhər", ug:"شەھەر" } },
+  { han:["县","縣"], rank:8, label:{ ru:"уезд", en:"county", dut:"arrondissement", esp:"condado", port:"condado", ko:"현", bn:"কাউন্টি", th:"อำเภอ", ka:"რაიონი", kk:"аудан", az:"rayon", ug:"ناھىيە" } },
+  { han:["区","區"], rank:8, label:{ ru:"район", en:"district", dut:"district", esp:"distrito", port:"distrito", ko:"구", bn:"জেলা", th:"เขต", ka:"რაიონი", kk:"аудан", az:"rayon", ug:"رايون" } },
+  { han:["镇","鎮"], rank:7, label:{ ru:"посёлок", en:"town", dut:"plaats", esp:"pueblo", port:"vila", ko:"진", bn:"শহরতা", th:"ตำบล", ka:"დაბა", kk:"қалашық", az:"qəsəbə", ug:"بازار" } },
+  { han:["乡","鄉"], rank:7, label:{ ru:"волость", en:"township", dut:"gemeente", esp:"municipio", port:"município", ko:"향", bn:"ইউনিয়ন", th:"ตำบล", ka:"თემი", kk:"болыс", az:"kənd icması", ug:"يېزا" } },
+  { han:["街道"], rank:6, label:{ ru:"улица", en:"subdistrict", dut:"wijk", esp:"subdistrito", port:"subdistrito", ko:"가도", bn:"উপজেলা", th:"แขวง", ka:"უბანი", kk:"ықшамаудан", az:"məhəllə", ug:"كوچا" } },
+  { han:["大道"], rank:6, label:{ ru:"проспект", en:"avenue", dut:"laan", esp:"avenida", port:"avenida", ko:"대로", bn:"সড়ক", th:"ถนนใหญ่", ka:"გამზირი", kk:"даңғыл", az:"prospekt", ug:"چوڭ يول" } },
+  { han:["路"], rank:6, label:{ ru:"улица", en:"road", dut:"weg", esp:"camino", port:"estrada", ko:"로", bn:"সড়ক", th:"ถนน", ka:"გზა", kk:"жол", az:"yol", ug:"يول" } },
+  { han:["街"], rank:6, label:{ ru:"улица", en:"street", dut:"straat", esp:"calle", port:"rua", ko:"가", bn:"রাস্তা", th:"ถนน", ka:"ქუჩა", kk:"көше", az:"küçə", ug:"كوچا" } },
+  { han:["巷"], rank:5, label:{ ru:"переулок", en:"lane", dut:"steeg", esp:"callejón", port:"beco", ko:"항", bn:"গলি", th:"ซอย", ka:"შესახვევი", kk:"тығырық", az:"dalan", ug:"ئەتىرگۈل" } },
+  { han:["弄"], rank:5, label:{ ru:"переулок", en:"alley", dut:"steeg", esp:"callejón", port:"beco", ko:"롱", bn:"সরু গলি", th:"ตรอก", ka:"შესახვევი", kk:"тығырық", az:"dalan", ug:"ئەتىرگۈل" } },
+  { han:["村"], rank:5, label:{ ru:"деревня", en:"village", dut:"dorp", esp:"aldea", port:"aldeia", ko:"촌", bn:"গ্রাম", th:"หมู่บ้าน", ka:"სოფელი", kk:"ауыл", az:"kənd", ug:"كەنت" } },
+  { han:["里"], rank:5, label:{ ru:"деревня", en:"village", dut:"dorp", esp:"aldea", port:"aldeia", ko:"리", bn:"গ্রাম", th:"หมู่บ้าน", ka:"სოფელი", kk:"ауыл", az:"kənd", ug:"مەھەللە" } },
+  { han:["庄","莊"], rank:5, label:{ ru:"деревня", en:"village", dut:"dorp", esp:"aldea", port:"aldeia", ko:"장", bn:"গ্রাম", th:"หมู่บ้าน", ka:"სოფელი", kk:"ауыл", az:"kənd", ug:"كەنت" } },
+  { han:["邻","鄰"], rank:4, label:{ ru:"соседство", en:"neighborhood", dut:"buurt", esp:"vecindario", port:"bairro", ko:"린", bn:"পাড়া", th:"คุ้ม", ka:"უბანი", kk:"маңай", az:"məhəllə", ug:"مەھەللە" } },
+  { han:["号","號"], rank:3, label:{ ru:"№", en:"No.", dut:"nr.", esp:"n.º", port:"n.º", ko:"호", bn:"নং", th:"เลขที่", ka:"№", kk:"№", az:"№", ug:"نومۇر" } },
+  { han:["盟"], rank:8, label:{ ru:"аймак", en:"league", dut:"liga", esp:"liga", port:"liga", ko:"맹", bn:"লীগ", th:"พันธมิตร", ka:"ლიგა", kk:"аймак", az:"aymaq", ug:"ئايماق" } },
+  { han:["旗"], rank:7, label:{ ru:"хошун", en:"banner", dut:"banier", esp:"bandera", port:"bandeira", ko:"기", bn:"ব্যানার", th:"ธง", ka:"ბანერი", kk:"хошун", az:"xoşun", ug:"قوشۇن" } },
+  { han:["苏木","蘇木"], rank:6, label:{ ru:"сомон", en:"sumu", dut:"sumu", esp:"sumu", port:"sumu", ko:"소목", bn:"সুমু", th:"ซูมู", ka:"სუმუ", kk:"сұмын", az:"sumu", ug:"سۇمۇ" } },
+  { han:["林区","林區"], rank:8, label:{ ru:"лесной район", en:"forestry district", dut:"bosdistrict", esp:"distrito forestal", port:"distrito florestal", ko:"임구", bn:"বন জেলা", th:"เขตป่าไม้", ka:"სატყეო რაიონი", kk:"орман ауданы", az:"meşə rayonu", ug:"ئورمان رايونى" } }
 ];
 const DIRECTION_MAP_HAKKA = {
-  "东": "Восточный", "西": "Западный", "南": "Южный", "北": "Северный", "中": "Центральный",
-  "東": "Восточный"
+  ru: { "东":"Восточный","西":"Западный","南":"Южный","北":"Северный","中":"Центральный","東":"Восточный" },
+  en: { "东":"East","西":"West","南":"South","北":"North","中":"Central","東":"East" },
+  dut:{ "东":"Oost","西":"West","南":"Zuid","北":"Noord","中":"Centraal","東":"Oost" },
+  esp:{ "东":"Este","西":"Oeste","南":"Sur","北":"Norte","中":"Central","東":"Este" },
+  port:{ "东":"Leste","西":"Oeste","南":"Sul","北":"Norte","中":"Central","東":"Leste" },
+  ko: { "东":"동","西":"서","南":"남","北":"북","中":"중","東":"동" },
+  bn: { "东":"পূর্ব","西":"পশ্চিম","南":"দক্ষিণ","北":"উত্তর","中":"মধ্য","東":"পূর্ব" },
+  th: { "东":"ตะวันออก","西":"ตะวันตก","南":"ใต้","北":"เหนือ","中":"กลาง","東":"ตะวันออก" },
+  ka: { "东":"აღმოსავლეთ","西":"დასავლეთ","南":"სამხრეთ","北":"ჩრდილოეთ","中":"ცენტრალური","東":"აღმოსავლეთ" },
+  kk: { "东":"Шығыс","西":"Батыс","南":"Оңтүстік","北":"Солтүстік","中":"Орталық","東":"Шығыс" },
+  az: { "东":"Şərq","西":"Qərb","南":"Cənub","北":"Şimal","中":"Mərkəzi","東":"Şərq" },
+  ug: { "东":"شەرقىي","西":"غەربىي","南":"جەنۇبىي","北":"شىمالىي","中":"مەركىزىي","東":"شەرقىي" }
 };
-
 /**
- * Left-to-right: find place-element starting at index `start`.
- * Longer Hanzi forms first. 里 is endOnly (only if rest of string is empty after it
- * or only followed by 邻/號/numbers — handled by caller via atEnd flag).
+ * Languages where the administrative label follows the name:
+ *   신좡 구 · Xinzhuang District · 新莊 আও · Türkic: Цзяи ауданы
+ * Element-FIRST languages: ru, dut, esp, port (уезд X · distrito X)
  */
+const PLACE_ELEMENT_AFTER = new Set(['ko','en','bn','th','ka','kk','az','ug']);
+
+function placeLabel(el, lang) {
+  const L = el.label || {};
+  return L[lang] || L.en || L.ru || '';
+}
+function directionLabel(ch, lang) {
+  const m = DIRECTION_MAP_HAKKA[lang] || DIRECTION_MAP_HAKKA.en;
+  return (m && m[ch]) || (DIRECTION_MAP_HAKKA.ru && DIRECTION_MAP_HAKKA.ru[ch]) || '';
+}
+function scriptToPlaceLang(sk) {
+  const map = {
+    cyr:'ru', palladium:'ru',
+    dut:'dut', esp:'esp', port:'port',
+    hangul:'ko', ko:'ko',
+    ben:'bn', thai:'th', geo:'ka', kaz:'kk', aze:'az', uig:'ug',
+    ipa:'en', pfs:'en', arm:'en'
+  };
+  return map[sk] || 'en';
+}
+
+/** Kazakh/Azerbaijani 3rd-person possessive-like ending on admin labels (ауданы, rayonu). */
+function turkicPossessive(word, lang) {
+  if (!word) return word;
+  if (lang === 'kk') {
+    // soft front vowels in last syllable → сі/і, else сы/ы
+    const tail = word.slice(-4);
+    const soft = /[еөүіэе]/i.test(tail);
+    if (/[аәеёиоуұүыіэө]$/i.test(word)) return word + (soft ? 'сі' : 'сы');
+    return word + (soft ? 'і' : 'ы');
+  }
+  if (lang === 'az') {
+    // very simplified: vowel-final → sı/si, else ı/i
+    const soft = /[eiöü]$/i.test(word) || /[eiöü]/i.test(word.slice(-2));
+    if (/[aıeiouöü]$/i.test(word)) return word + (soft ? 'si' : 'sı');
+    return word + (soft ? 'i' : 'ı');
+  }
+  if (lang === 'ug') {
+    // light: append ى if not already vowel-marked
+    if (/[اەېىوۇۆۈ]$/.test(word)) return word + 'سى';
+    return word + 'ى';
+  }
+  return word;
+}
+
+/** Combine name + element in language-appropriate order (+ Turkic suffixes). */
+function formatPlaceSegment(elLab, nameOut, lang, dirOnly) {
+  if (!elLab && !nameOut) return '';
+  if (!nameOut) return elLab;
+
+  // Turkic: always Name + Label(+сы/sı)
+  if (lang === 'kk' || lang === 'az' || lang === 'ug') {
+    const lab = turkicPossessive(elLab, lang);
+    if (dirOnly) return (nameOut + ' ' + lab).trim();
+    return (nameOut + ' ' + lab).trim();
+  }
+
+  // Name then element (ko, en, bn, th, ka…): 신좡 구 · Xinzhuang District
+  if (PLACE_ELEMENT_AFTER.has(lang)) {
+    return (nameOut + ' ' + elLab).trim();
+  }
+
+  // Element then name (ru, dut, esp, port): уезд Цзяи · distrito X
+  // Direction: Северный район / Noord district — adjective still before label
+  if (dirOnly) return (nameOut + ' ' + elLab).trim();
+  return (elLab + ' ' + nameOut).trim();
+}
+
 function matchPlaceAtHakka(chars, start, atEnd) {
   const rest = chars.slice(start).join('');
   if (!rest) return null;
@@ -29207,43 +29399,76 @@ function matchPlaceAtHakka(chars, start, atEnd) {
 }
 
 /** Arabic digits → Chinese numerals in parentheses, e.g. 69 → (六九) or better 六十九 */
-function arabicToChineseParen(numStr) {
+function arabicToChinese(numStr) {
   const dig = ['零','一','二','三','四','五','六','七','八','九'];
-  // simple: convert digit-by-digit for multi-digit, special cases for 10, 100
-  const n = parseInt(numStr.replace(/[^0-9]/g, ''), 10);
-  if (isNaN(n)) return '(' + numStr + ')';
   function toCn(x) {
+    x = Math.floor(Math.abs(Number(x)));
+    if (!isFinite(x)) return String(numStr);
     if (x < 10) return dig[x];
     if (x < 20) return '十' + (x === 10 ? '' : dig[x % 10]);
     if (x < 100) {
-      const t = Math.floor(x / 10), o = x % 10;
-      return dig[t] + '十' + (o ? dig[o] : '');
+      const ten = Math.floor(x / 10), one = x % 10;
+      return dig[ten] + '十' + (one ? dig[one] : '');
     }
     if (x < 1000) {
-      const h = Math.floor(x / 100), r = x % 100;
-      return dig[h] + '百' + (r ? (r < 10 ? '零' + dig[r] : toCn(r)) : '');
+      const hun = Math.floor(x / 100), rest = x % 100;
+      return dig[hun] + '百' + (rest ? (rest < 10 ? '零' + dig[rest] : toCn(rest)) : '');
     }
-    // fallback digit-by-digit
     return String(x).split('').map(d => dig[+d] || d).join('');
   }
-  // for hyphenated 60-3 → 六十-三 style per part
-  if (/[\-－]/.test(numStr)) {
-    return '(' + numStr.split(/[\-－]/).map(p => {
-      const v = parseInt(p, 10);
+  const s = String(numStr).trim();
+  if (/[\-－]/.test(s)) {
+    return s.split(/[\-－]/).map(p => {
+      const v = parseInt(p.replace(/[^0-9]/g, ''), 10);
       return isNaN(v) ? p : toCn(v);
-    }).join('－') + ')';
+    }).join('－');
   }
-  return '(' + toCn(n) + ')';
+  const n = parseInt(s.replace(/[^0-9]/g, ''), 10);
+  if (isNaN(n)) return s;
+  return toCn(n);
+}
+function arabicToChineseParen(numStr) {
+  return '(' + arabicToChinese(numStr) + ')';
+}
+/** 69 → " 69 (liugˋ sibˋ ...)" in the given script key of convertRomanLine */
+function numberToScriptParen(numStr, scriptKey) {
+  const cn = arabicToChinese(numStr);
+  let form = '';
+  try {
+    const segs = hanziToRoman(cn);
+    // always space inside paren for readability of multi-syllable numerals
+    const saved = currentMode;
+    currentMode = 'force-space';
+    const roman = segs.map(s => s.text).join(' ').replace(/\s+/g, ' ').trim();
+    const r = convertRomanLine(roman);
+    currentMode = saved;
+    form = (r[scriptKey] || r.cyr || roman || cn).replace(/\s+/g, ' ').trim();
+  } catch (e) {
+    form = cn;
+  }
+  return '(' + form + ')';
+}
+/** Space letter↔digit and append (script form) after every number — for any script output */
+function annotateNumbersInScript(text, scriptKey) {
+  let s = String(text);
+  // Always space letter ↔ digit
+  s = s.replace(/([^\s\d])(\d)/g, '$1 $2');
+  s = s.replace(/(\d)([^\s\d\)\(])/g, '$1 $2');
+  // Parentheses only if switch is on
+  const wantParen = document.getElementById('numParenToggle')?.checked;
+  if (wantParen) {
+    s = s.replace(/\b(\d+[\-－]?\d*)\b(?!\s*\()/g, (m) => {
+      return m + ' ' + numberToScriptParen(m, scriptKey || 'cyr');
+    });
+  }
+  return s.replace(/[ \t]+/g, ' ').replace(/ *\n */g, '\n').trim();
 }
 
-/**
- * Build Russian place-name gloss from Hanzi line (left-to-right).
- * 嘉義縣阿里山鄉樂野村 → уезд …, волость …, деревня …
- */
-function buildPlaceGloss(hanziLine, nameConverter) {
+
+function buildPlaceGloss(hanziLine, nameConverter, lang) {
+  lang = lang || 'ru';
   const chars = Array.from(hanziLine);
-  // Build stream of tokens: hanzi runs and number runs
-  const stream = []; // {type:'han'|'num'|'other', text}
+  const stream = [];
   let i = 0;
   while (i < chars.length) {
     if (/[\u4e00-\u9fff]/.test(chars[i])) {
@@ -29258,111 +29483,105 @@ function buildPlaceGloss(hanziLine, nameConverter) {
       stream.push({ type: 'other', text: chars[i++] });
     }
   }
-
-  // Work on concatenated hanzi only for place peel, but re-insert nums after
   const hanChars = [];
-  const hanOrigins = []; // map han index → stream index
-  stream.forEach((tok, si) => {
-    if (tok.type === 'han') {
-      for (const ch of tok.text) {
-        hanOrigins.push(si);
-        hanChars.push(ch);
-      }
-    }
-  });
+  stream.forEach(tok => { if (tok.type === 'han') for (const ch of tok.text) hanChars.push(ch); });
   if (!hanChars.length) return null;
 
-  // Left-to-right place element scan
-  const boundaries = []; // { el, start, end }
+  // Collect ALL L→R matches
+  const rawBounds = [];
   let pos = 0;
   while (pos < hanChars.length) {
-    // atEnd for 里: no more high-tier elements after?
-    const restAfter = hanChars.slice(pos).join('');
-    const atEnd = !/[县縣市省区區乡镇鎮乡村]/.test(restAfter.slice(1)); // rough
-    const m = matchPlaceAtHakka(hanChars, pos, pos + 1 >= hanChars.length || atEnd);
-    if (m) {
-      // element at pos — name is from previous cursor
-      boundaries.push({ el: m.el, start: pos, end: pos + m.len, isEl: true });
-      pos += m.len;
-    } else {
-      pos++;
+    const rest = hanChars.slice(pos).join('');
+    let matched = false;
+    for (const el of PLACE_ELEMENTS_HAKKA) {
+      for (const h of el.han) {
+        if (rest.startsWith(h)) {
+          const len = Array.from(h).length;
+          rawBounds.push({ el, start: pos, end: pos + len, rank: el.rank || 0 });
+          pos += len;
+          matched = true;
+          break;
+        }
+      }
+      if (matched) break;
     }
+    if (!matched) pos++;
   }
+  if (!rawBounds.length) return null;
+
+  // Drop lower-rank element if a higher-rank element appears to its right
+  // → 新莊區 / 南庄鄉: 庄 is name, 區/鄉 is unit
+  // Drop a unit if a strictly larger admin unit appears to its right
+  // 新莊區 / 南庄鄉 / 大里區: 庄·里 stay inside the name
+  const boundaries = rawBounds.filter((b, idx) => {
+    for (let j = idx + 1; j < rawBounds.length; j++) {
+      if (rawBounds[j].rank > b.rank) return false;
+    }
+    return true;
+  });
   if (!boundaries.length) return null;
 
-  // Rebuild segments: names between elements
+  const linWord = placeLabel({ label: { ru:'соседство', en:'neighborhood', dut:'buurt', esp:'vecindario', port:'bairro', ko:'린', bn:'পাড়া', th:'คุ้ม', ka:'უბანი', kk:'маңай', az:'məhəllə', ug:'مەھەللە' } }, lang);
+  const haoWord = placeLabel({ label: { ru:'№', en:'No.', dut:'nr.', esp:'n.º', port:'n.º', ko:'호', bn:'নং', th:'เลขที่', ka:'№', kk:'№', az:'№', ug:'نومۇر' } }, lang);
+
   const segments = [];
   let cursor = 0;
   for (const b of boundaries) {
     const nameChars = hanChars.slice(cursor, b.start);
-    if (nameChars.length === 1 && DIRECTION_MAP_HAKKA[nameChars[0]]) {
-      segments.push(DIRECTION_MAP_HAKKA[nameChars[0]] + ' ' + b.el.ru);
-    } else if (nameChars.length || b.el.ru === '№' || b.el.ru === 'соседство') {
+    const elLab = placeLabel(b.el, lang);
+    const isHao = (b.el.han || []).some(x => x === '号' || x === '號');
+    const isLin = (b.el.han || []).some(x => x === '邻' || x === '鄰');
+    if (nameChars.length === 1 && directionLabel(nameChars[0], lang)) {
+      segments.push(formatPlaceSegment(elLab, directionLabel(nameChars[0], lang), lang, true));
+    } else {
       const nameStr = nameChars.join('');
-      let nameCyr = nameStr && nameConverter ? nameConverter(nameStr) : '';
-      if (nameCyr) {
-        nameCyr = nameCyr.charAt(0).toUpperCase() + nameCyr.slice(1);
-        segments.push(b.el.ru + ' ' + nameCyr);
-      } else if (!nameStr && (b.el.ru === '№' || b.el.ru === 'соседство')) {
-        segments.push(b.el.ru);
+      let nameOut = nameStr && nameConverter ? nameConverter(nameStr) : '';
+      if (nameOut) {
+        // capitalize first letter of whole string only if not already spaced Title Case
+        if (!/\s/.test(nameOut)) {
+          nameOut = nameOut.charAt(0).toUpperCase() + nameOut.slice(1);
+        }
+        segments.push(formatPlaceSegment(elLab, nameOut, lang, false));
+      } else if (!nameStr && (isHao || isLin)) {
+        segments.push(elLab);
       } else if (nameStr) {
-        segments.push(b.el.ru + ' ' + nameStr);
+        segments.push(formatPlaceSegment(elLab, nameStr, lang, false));
       } else {
-        segments.push(b.el.ru);
+        segments.push(elLab);
       }
     }
     cursor = b.end;
   }
   if (cursor < hanChars.length) {
     const rest = hanChars.slice(cursor).join('');
-    let restCyr = nameConverter ? nameConverter(rest) : rest;
-    if (restCyr) {
-      restCyr = restCyr.charAt(0).toUpperCase() + restCyr.slice(1);
-      segments.push(restCyr);
+    let restOut = nameConverter ? nameConverter(rest) : rest;
+    if (restOut) {
+      if (!/\s/.test(restOut)) restOut = restOut.charAt(0).toUpperCase() + restOut.slice(1);
+      segments.push(restOut);
     }
   }
 
-  // Attach numbers from original: after 邻/號 prefer "соседство 2 (二)", "№ 69 (六十九)"
-  // Also ensure space between hanzi-derived text and numbers
   let result = segments.join(', ');
-  // Post-process number tokens in original line
-  const numParts = [];
-  for (const tok of stream) {
-    if (tok.type === 'num') {
-      numParts.push(tok.text + ' ' + arabicToChineseParen(tok.text));
-    }
-  }
-  // If we have соседство / № without numbers in segments, try to fill from numParts
-  // Simpler: append numbers that appear in the original after the last place name
-  // Rebuild using stream order for 邻/號 + numbers
-  // For reliability, do a second pass on original line for 数字鄰/號 patterns
-  result = result.replace(/соседство(?!\s*\d)/g, () => {
-    return 'соседство'; // filled below
-  });
-  // Pattern: N鄰 → соседство N (cn), N號 → № N (cn)
-  let extra = '';
   const reLin = /([0-9\-－]+)\s*[邻鄰]/g;
   const reHao = /([0-9\-－]+)\s*[号號]/g;
   let mm;
-  const used = new Set();
   while ((mm = reLin.exec(hanziLine)) !== null) {
-    used.add(mm[1]);
-    // replace bare соседство with numbered form if present
-    if (result.includes('соседство') && !/соседство\s+\d/.test(result)) {
-      result = result.replace('соседство', 'соседство ' + mm[1] + ' ' + arabicToChineseParen(mm[1]));
-    } else if (!result.includes('соседство ' + mm[1])) {
-      result += ', соседство ' + mm[1] + ' ' + arabicToChineseParen(mm[1]);
+    const ann = formatPlaceSegment(linWord, mm[1] + ' ' + arabicToChineseParen(mm[1]), lang, false);
+    if (result.includes(linWord) && !result.includes(mm[1])) {
+      result = result.replace(linWord, ann);
+    } else if (!result.includes(mm[1])) {
+      result += ', ' + ann;
     }
   }
   while ((mm = reHao.exec(hanziLine)) !== null) {
-    if (result.includes('№') && !/№\s+\d/.test(result)) {
-      result = result.replace(/№(?!\s*\d)/, '№ ' + mm[1] + ' ' + arabicToChineseParen(mm[1]));
-    } else if (!result.includes('№ ' + mm[1])) {
-      result += ', № ' + mm[1] + ' ' + arabicToChineseParen(mm[1]);
+    const ann = formatPlaceSegment(haoWord, mm[1] + ' ' + arabicToChineseParen(mm[1]), lang, false);
+    if (result.includes(haoWord) && !result.includes(mm[1])) {
+      result = result.replace(haoWord, ann);
+    } else if (!result.includes(mm[1])) {
+      result += ', ' + ann;
     }
   }
-  // Space before any remaining glued numbers: letter/digit boundary
-  result = result.replace(/([\u0400-\u04FF\u4e00-\u9fff])(\d)/g, '$1 $2');
+  result = result.replace(/([^\s\d])(\d)/g, '$1 $2');
   return result;
 }
 
@@ -29431,86 +29650,140 @@ function convert() {
     hangulLines.push(convertHangulLine(line));
     pfsLines.push(moeLineToPfs(line));
   }
-  ids.forEach(id => {
-    const el = document.getElementById('out-' + id);
-    if (el) el.textContent = results[id].join('\n');
-  });
-  const hangulEl = document.getElementById('out-hangul');
-  if (hangulEl) hangulEl.textContent = hangulLines.join('\n');
-  const pfsEl = document.getElementById('out-pfs');
-  if (pfsEl) pfsEl.textContent = pfsLines.join('\n');
+  // outputs filled after place-name + number post-process below
 
-  // Palladium: approximate from existing Cyrillic (custom Hakka) with light adjustments
+  // ---- Post-process every script: spacing is already via currentMode ----
+  // Palladium from Cyrillic
   let cyrJoined = results.cyr.join('\n');
   let palladium = cyrJoined
     .replace(/дз/g,'цз').replace(/тш/g,'ч').replace(/дж/g,'чж')
     .replace(/щ/g,'с').replace(/н̩/g,'н').replace(/м̩/g,'м');
 
-  // Place-name mode: rewrite Cyrillic / Palladium with semantic geo labels
   const placeOn = document.getElementById('placeToggle') && document.getElementById('placeToggle').checked;
-  if (placeOn && containsHanzi(raw)) {
-    const nameToCyr = (hanName) => {
-      if (!hanName) return '';
-      const segs = hanziToRoman(hanName);
-      const roman = segs.map(s => s.text).join(currentMode === 'no-space' ? '' : ' ');
-      const r = convertRomanLine(roman.replace(/\s+/g, ' ').trim());
-      return (r.cyr || '').replace(/\s+/g, currentMode === 'no-space' ? '' : ' ');
-    };
-    const glossLines = raw.split(/\r?\n/).map(line => {
-      const gloss = buildPlaceGloss(line, nameToCyr);
-      return gloss; // null if no place elements
-    });
-    if (glossLines.every(g => g !== null)) {
-      cyrJoined = glossLines.join('\n');
-      palladium = cyrJoined;
-    } else if (glossLines.some(g => g !== null)) {
-      // mix: use gloss where available
-      const cyrLines = cyrJoined.split('\n');
-      cyrJoined = glossLines.map((g, i) => g !== null ? g : (cyrLines[i] || '')).join('\n');
-      palladium = cyrJoined;
+
+  function nameToScript(hanName, scriptKey) {
+    if (!hanName) return '';
+    const segs = hanziToRoman(hanName).filter(s => s.type === 'roman' || s.type === 'poly');
+    // Convert each hanzi syllable separately to preserve boundaries
+    const pieces = [];
+    for (const seg of segs) {
+      const r = convertRomanLine(seg.text);
+      let piece = (r[scriptKey] || r.cyr || '').trim();
+      if (!piece) continue;
+      // Place ON + spaced → capitalize each syllable
+      if (currentMode !== 'no-space') {
+        piece = piece.split(/\s+/).map(w => w ? w.charAt(0).toUpperCase() + w.slice(1) : w).join(' ');
+      }
+      pieces.push(piece);
     }
+    if (currentMode === 'no-space') return pieces.join('');
+    return pieces.join(' ');
   }
 
-  const cyrEl = document.getElementById('out-cyr');
-  if (cyrEl) cyrEl.textContent = cyrJoined;
-  const palEl = document.getElementById('out-palladium');
-  if (palEl) palEl.textContent = palladium;
+  // Place-name: apply to ALL script outputs when enabled
+  if (placeOn && containsHanzi(raw)) {
+    const scriptKeys = ['cyr','dut','esp','port','ben']; // ipa: no semantic place / no Title Case
+    for (const sk of scriptKeys) {
+      const glossLines = raw.split(/\r?\n/).map(line => {
+        const gloss = buildPlaceGloss(line, (han) => nameToScript(han, sk), scriptToPlaceLang(sk));
+        return gloss;
+      });
+      if (glossLines.some(g => g !== null)) {
+        const orig = results[sk] || [];
+        results[sk] = glossLines.map((g, i) => g !== null ? g : (orig[i] || ''));
+      }
+    }
+    // Hangul: Korean place labels + hangul names
+    const hangulGloss = raw.split(/\r?\n/).map((line, i) => {
+      const gloss = buildPlaceGloss(line, (han) => {
+        const segs = hanziToRoman(han).filter(s => s.type === 'roman' || s.type === 'poly');
+        const parts = segs.map(s => convertHangulLine(s.text));
+        if (currentMode === 'no-space') return parts.join('');
+        // spaced + place: each syllable already one hangul cluster; space between
+        return parts.join(' ');
+      }, 'ko');
+      return gloss !== null ? gloss : hangulLines[i];
+    });
+    for (let i = 0; i < hangulGloss.length; i++) hangulLines[i] = hangulGloss[i];
 
-  updateExtraScript(results, lines);
+    cyrJoined = results.cyr.join('\n');
+    palladium = cyrJoined
+      .replace(/дз/g,'цз').replace(/тш/g,'ч').replace(/дж/g,'чж')
+      .replace(/щ/g,'с').replace(/н̩/g,'н').replace(/м̩/g,'м');
+  }
+
+  // Always annotate numbers (space + paren with converted form) for every output
+  function finish(text, sk) {
+    if (typeof annotateNumbersInScript === 'function') return annotateNumbersInScript(text, sk);
+    // fallback
+    return String(text).replace(/([^\s\d])(\d)/g, '$1 $2').replace(/\b(\d+[-\-－]?\d*)\b/g, (m) => m + ' ' + arabicToChineseParen(m));
+  }
+
+  ids.forEach(id => {
+    const el = document.getElementById('out-' + id);
+    if (el) el.textContent = finish((results[id] || []).join('\n'), id);
+  });
+  const hangulEl = document.getElementById('out-hangul');
+  if (hangulEl) hangulEl.textContent = finish(hangulLines.join('\n'), 'cyr');
+  const pfsEl = document.getElementById('out-pfs');
+  if (pfsEl) pfsEl.textContent = finish(pfsLines.join('\n'), 'cyr');
+  const cyrEl = document.getElementById('out-cyr');
+  if (cyrEl) cyrEl.textContent = finish(cyrJoined, 'cyr');
+  const palEl = document.getElementById('out-palladium');
+  if (palEl) palEl.textContent = finish(palladium, 'cyr');
+
+  updateExtraScript(results, lines, raw);
 }
 
-function updateExtraScript(results, lines) {
+
+function mapLineToExtra(line, script) {
+  if (script === 'ben') {
+    const r = convertRomanLine(line);
+    return r.ben || '';
+  }
+  const map = extraMaps[script] || {};
+  const r = convertRomanLine(line);
+  let s = (r.ipa || line).replace(/[ʰʷ̯̩̌̀̂́̄̚]/g,'').toLowerCase();
+  let mapped = '';
+  let i = 0;
+  const keys = Object.keys(map).sort((a,b)=>b.length-a.length);
+  while (i < s.length) {
+    let matched = false;
+    for (const k of keys) {
+      if (s.startsWith(k, i)) { mapped += map[k]; i += k.length; matched = true; break; }
+    }
+    if (!matched) { mapped += s[i]; i++; }
+  }
+  return mapped;
+}
+
+function updateExtraScript(results, lines, rawInput) {
   const sel = document.getElementById('extraScriptSelect');
   const script = sel ? sel.value : 'ben';
   const el = document.getElementById('out-extra');
   if (!el) return;
-  if (script === 'ben') {
-    el.textContent = results.ben ? results.ben.join('\n') : '';
-    return;
+  const placeOn = document.getElementById('placeToggle') && document.getElementById('placeToggle').checked;
+  const lang = scriptToPlaceLang(script);
+  let outLines;
+  if (placeOn && rawInput && containsHanzi(rawInput)) {
+    outLines = rawInput.split(/\r?\n/).map((hanLine, idx) => {
+      const gloss = buildPlaceGloss(hanLine, (han) => {
+        const segs = hanziToRoman(han);
+        const join = currentMode === 'no-space' ? '' : ' ';
+        const roman = segs.map(s => s.text).join(join);
+        return mapLineToExtra(roman, script);
+      }, lang);
+      if (gloss !== null) return gloss;
+      return mapLineToExtra(lines[idx] || '', script);
+    });
+  } else {
+    outLines = lines.map(line => mapLineToExtra(line, script));
   }
-  // Build from roman syllables using extraMaps
-  const map = extraMaps[script] || {};
-  const outLines = [];
-  for (const line of lines) {
-    const { base, tones } = extractTonesFromToken(line.replace(/[^a-zA-Zˊˇˋ^+⁺ˉ˙\s]/g,'').toLowerCase() || '');
-    // simple pass: use convertSequence style onset+core if possible
-    const r = convertRomanLine(line);
-    // fallback: use IPA-ish stripping
-    let s = (r.ipa || line).replace(/[ʰʷ̯̩̌̀̂́̄̚]/g,'').toLowerCase();
-    // apply char map greedily
-    let mapped = '';
-    let i = 0;
-    const keys = Object.keys(map).sort((a,b)=>b.length-a.length);
-    while (i < s.length) {
-      let matched = false;
-      for (const k of keys) {
-        if (s.startsWith(k, i)) { mapped += map[k]; i += k.length; matched = true; break; }
-      }
-      if (!matched) { mapped += s[i]; i++; }
-    }
-    outLines.push(mapped);
+  let text = outLines.join('\n');
+  if (typeof annotateNumbersInScript === 'function') {
+    text = annotateNumbersInScript(text, script === 'ben' ? 'ben' : 'cyr');
   }
-  el.textContent = outLines.join('\n');
+  el.textContent = text;
 }
 
 
@@ -29541,6 +29814,8 @@ document.getElementById('toneToggle').addEventListener('change', e => {
 });
 const placeToggleEl = document.getElementById('placeToggle');
 if (placeToggleEl) placeToggleEl.addEventListener('change', () => convert());
+const numParenToggleEl = document.getElementById('numParenToggle');
+if (numParenToggleEl) numParenToggleEl.addEventListener('change', () => convert());
 const spaceToggleEl = document.getElementById('spaceToggle');
 if (spaceToggleEl) spaceToggleEl.addEventListener('change', e => {
   currentMode = e.target.checked ? 'force-space' : 'no-space';
