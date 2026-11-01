@@ -358,6 +358,23 @@
       transition: all 0.15s; white-space: nowrap; font-family: inherit;
     }
     .clear-btn:hover { border-color: var(--cinnabar); color: var(--cinnabar); background: #fdf6f0; }
+    .tone-kb {
+      display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center;
+      padding: 0.55rem 1.15rem 0.65rem; border-top: 1px solid #efe6d8; background: #faf6f0;
+    }
+    .tone-kb-label {
+      font-family: "Literata", "Gowun Batang", "Noto Serif TC", Georgia, serif;
+      font-size: 0.72rem; color: var(--muted); margin-right: 0.25rem;
+    }
+    .tone-btn {
+      min-width: 2.1rem; height: 1.85rem; padding: 0 0.45rem;
+      border-radius: 7px; font-size: 1.05rem; font-weight: 600;
+      border: 1px solid #d4c9b8; background: #fff; color: var(--ink); cursor: pointer;
+      transition: all 0.15s; font-family: "Literata", "Noto Serif TC", serif;
+      line-height: 1; display: inline-flex; align-items: center; justify-content: center;
+    }
+    .tone-btn:hover { border-color: var(--cinnabar); color: var(--cinnabar); background: #fdf6f0; }
+    .tone-btn:active { background: rgba(155,44,44,0.12); }
     .out-label.hangul-label {
       font-family: "Cormorant Unicase", "Gowun Batang", "Noto Serif KR", "Literata", serif;
       font-weight: 700; letter-spacing: 0.08em;
@@ -415,6 +432,15 @@
           <span class="ctrl-label">Цифры → (…)</span>
           <label class="switch"><input type="checkbox" id="numParenToggle"><span class="slider"></span></label>
         </div>
+      </div>
+      <div class="tone-kb" id="toneKeyboard">
+        <span class="tone-kb-label">성조</span>
+        <button type="button" class="tone-btn" data-tone="ˊ" title="ˊ">ˊ</button>
+        <button type="button" class="tone-btn" data-tone="ˇ" title="ˇ">ˇ</button>
+        <button type="button" class="tone-btn" data-tone="ˋ" title="ˋ">ˋ</button>
+        <button type="button" class="tone-btn" data-tone="ˉ" title="ˉ">ˉ</button>
+        <button type="button" class="tone-btn" data-tone="⁺" title="⁺">⁺</button>
+        <button type="button" class="tone-btn" data-tone="ˆ" title="ˆ">ˆ</button>
       </div>
       <div class="pfs-badge" id="pfsBadge" title="Обнаружена церковная романизация (Pha̍k-fa-sṳ). Дефис «-» в MoE становится пробелом.">
         <span class="pfs-onair">ON AIR</span>
@@ -28750,7 +28776,7 @@ function convertHakkaToHangul(input){
     ['пˣ','ㅍ'],['тˣ','ㅌ'],['цˣ','ㅊ'],['кˣ','ㅋ'],['ћˣ','ㅊ'],['чˣ','ㅊ'],
     ['п','ㅂ'],['б','ㅂ'],['м','ㅁ'],['в','ㅂ'],['ф','ㅍ'],
     ['т','ㄷ'],['д','ㄷ'],['н','ㄴ'],['л','ㄹ'],
-    ['ц','ㅈ'],['ѕ','ㅈ'],['с','ㅅ'],['з','ㅈ'],
+    ['ц','ㅉ'],['ѕ','ㅈ'],['с','ㅆ'],['з','ㅈ'],
     ['ћ','ㅈ'],['ђ','ㅈ'],['њ','ㄴ'],['щ','ㅅ'],['җ','ㅈ'],
     ['ч','ㅈ'],['џ','ㅈ'],['нж','ㄴ'],['ш','ㅅ'],['ж','ㅈ'],
     ['к','ㄱ'],['г','ㄱ'],['ҥ','ㅇ'],['х','ㅎ'],
@@ -29129,7 +29155,7 @@ function processSyllableMoeToPfs(syllable) {
   const cap = syllable.length && syllable[0]===syllable[0].toUpperCase() && syllable[0]!==syllable[0].toLowerCase();
   let lower=syllable.toLowerCase();
   let toneMark='';
-  for (const m of ['ˊ','ˇ','ˋ','ˉ']) {
+  for (const m of ['ˊ','ˇ','ˋ','ˉ','⁺','ˆ','^']) {
     if (lower.endsWith(m)) { toneMark=m; lower=lower.slice(0,-1); break; }
   }
   let base=lower, finalC='';
@@ -29154,10 +29180,41 @@ function processSyllableMoeToPfs(syllable) {
   let finalSyl = converted + convFinal;
   let finalTone='';
   const plosive = finalC==='b'||finalC==='d'||finalC==='g';
-  if (toneMark==='') finalTone = plosive ? TONE_MARKS_NFD.EIGHTH : '';
-  else if (toneMark==='ˋ') finalTone = plosive ? '' : TONE_MARKS_NFD.FALLING;
-  else if (toneMark==='ˊ') finalTone = TONE_MARKS_NFD.RISING;
-  else if (toneMark==='ˇ') finalTone = TONE_MARKS_NFD.DIPPING;
+  // Dialect-aware MoE → PFS tone (Xiyen vs Hoiliuk use different marks for the same tone class)
+  // Table (сиень | хойлюк | церков):
+  // ˊ|ˋ|◌̂   ˇ|ˉ|◌̀   ˋ|ˊ|◌́   ˉ|ˇ|Ø   ˉ|⁺|◌̊   bdgˋ|bdgˉ|Ø   bdgˉ|bdgˋ|◌̍
+  if (currentDialect === 'hoiliuk') {
+    if (plosive) {
+      if (toneMark === 'ˋ') finalTone = TONE_MARKS_NFD.EIGHTH;           // ◌̍
+      else if (toneMark === 'ˉ' || toneMark === '') finalTone = '';      // Ø
+      else if (toneMark === 'ˊ') finalTone = TONE_MARKS_NFD.FALLING;
+      else if (toneMark === 'ˇ') finalTone = TONE_MARKS_NFD.DIPPING;
+      else if (toneMark === '⁺' || toneMark === 'ˆ' || toneMark === '^') finalTone = TONE_MARKS_NFD.FIRST;
+    } else {
+      if (toneMark === 'ˋ') finalTone = TONE_MARKS_NFD.RISING;           // ◌̂
+      else if (toneMark === 'ˉ') finalTone = TONE_MARKS_NFD.DIPPING;      // ◌̀
+      else if (toneMark === 'ˊ') finalTone = TONE_MARKS_NFD.FALLING;      // ◌́
+      else if (toneMark === 'ˇ') finalTone = '';                         // Ø
+      else if (toneMark === '⁺' || toneMark === 'ˆ' || toneMark === '^') finalTone = TONE_MARKS_NFD.FIRST; // ◌̊
+      else if (toneMark === '') finalTone = '';
+    }
+  } else {
+    // xiyen (default) — table: ˊ→̂  ˇ→̀  ˋ→́  ˉ→Ø  ⁺/(ˉ)→̊  bdgˋ→Ø  bdgˉ→̍
+    if (plosive) {
+      if (toneMark === 'ˉ') finalTone = TONE_MARKS_NFD.EIGHTH;           // ◌̍
+      else if (toneMark === 'ˋ' || toneMark === '') finalTone = '';      // Ø
+      else if (toneMark === 'ˊ') finalTone = TONE_MARKS_NFD.RISING;
+      else if (toneMark === 'ˇ') finalTone = TONE_MARKS_NFD.DIPPING;
+      else if (toneMark === '⁺' || toneMark === 'ˆ' || toneMark === '^') finalTone = TONE_MARKS_NFD.FIRST;
+    } else {
+      if (toneMark === 'ˊ') finalTone = TONE_MARKS_NFD.RISING;           // ◌̂
+      else if (toneMark === 'ˇ') finalTone = TONE_MARKS_NFD.DIPPING;      // ◌̀
+      else if (toneMark === 'ˋ') finalTone = TONE_MARKS_NFD.FALLING;      // ◌́
+      else if (toneMark === 'ˉ') finalTone = '';                         // Ø  (ˉ | ˇ | Ø)
+      else if (toneMark === '⁺' || toneMark === 'ˆ' || toneMark === '^') finalTone = TONE_MARKS_NFD.FIRST; // ◌̊
+      else if (toneMark === '') finalTone = '';
+    }
+  }
   let out = finalTone ? placeToneMarkPfs(finalSyl, finalTone) : finalSyl;
   if (cap && out.length) {
     out = out.normalize('NFC');
@@ -29867,6 +29924,22 @@ if (extraSel) {
   extraSel.addEventListener('change', () => convert());
 }
 document.getElementById('input').addEventListener('input', convert);
+document.querySelectorAll('.tone-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const ta = document.getElementById('input');
+    if (!ta) return;
+    const tone = btn.dataset.tone || '';
+    const start = ta.selectionStart ?? ta.value.length;
+    const end = ta.selectionEnd ?? ta.value.length;
+    const before = ta.value.slice(0, start);
+    const after = ta.value.slice(end);
+    ta.value = before + tone + after;
+    const pos = start + tone.length;
+    ta.setSelectionRange(pos, pos);
+    ta.focus();
+    convert();
+  });
+});
 document.getElementById('clearInput').addEventListener('click', () => {
   const el = document.getElementById('input');
   el.value = '';
