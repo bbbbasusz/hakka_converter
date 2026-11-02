@@ -390,7 +390,7 @@
     <header>
       <div class="seal">客</div>
       <h1>Конвертер хакка</h1>
-      <p class="subtitle">Иероглифы / романизация (MoE · Phak-fa-sṳ) → МФА · кириллица · хангыль · Палладий<br class="line2-br"><span class="line2">Голландский · Испанский · Португальский · Бенгальский · Тайский · Грузинский · …</span></p>
+      <p class="subtitle">Иероглифы / романизация (MoE · Pha̍k-fa-sṳ) → МФА · кириллица · хангыль · Палладий<br class="line2-br"><span class="line2">Голландский · Испанский · Португальский · Бенгальский · Тайский · Грузинский · …</span></p>
       <span class="dialect-tag" id="dialectTag">Hagˋ vunˇ zonˋ vonˉ hiˉ</span>
     </header>
     <div class="card">
@@ -28820,6 +28820,26 @@ function assembleHangul(str){
   }
   return result;
 }
+/** MoE tone → Hangul contour mark (shown when tone toggle is on) */
+function hangulToneContour(toneMark, isChecked) {
+  if (!toneMark) return '';
+  if (isChecked) {
+    if (toneMark === 'ˉ') return '↗';
+    if (toneMark === 'ˋ') return '↘';
+    // other marks on checked syllables: fall back to non-checked map
+  }
+  const map = {
+    'ˋ': '↗↘',
+    'ˉ': '↗',
+    'ˊ': '↘↗',
+    'ˇ': '↘',
+    '⁺': '→',
+    'ˆ': '→',
+    '^': '→',
+    '+': '→',
+  };
+  return map[toneMark] || '';
+}
 function convertHangulLine(line){
   if(!line.trim()) return '';
   const parts = [];
@@ -28846,8 +28866,11 @@ function convertHangulLine(line){
       const onset = syls[i].onset || '';
       const core = syls[i].core || '';
       const tone = tones[i] || '';
-      const piece = onset + core + (tone && showTone ? tone : '');
-      hangulSyls.push(convertHakkaToHangul(piece || p.c));
+      const bare = (onset + core).replace(TONE_REGEX, '');
+      const isChecked = /[bdg]$/i.test(bare);
+      const hangul = convertHakkaToHangul(onset + core || p.c);
+      const contour = showTone ? hangulToneContour(tone, isChecked) : '';
+      hangulSyls.push(hangul + contour);
     }
     out += hangulSyls.filter(Boolean).join(sep);
   }
