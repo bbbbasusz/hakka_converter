@@ -390,7 +390,7 @@
     <header>
       <div class="seal">客</div>
       <h1>Конвертер хакка</h1>
-      <p class="subtitle">Иероглифы / романизация (MoE · Pha̍k-fa-sṳ) → МФА · кириллица · хангыль · Палладий<br class="line2-br"><span class="line2">Голландский · Испанский · Португальский · Бенгальский · Тайский · Грузинский · …</span></p>
+      <p class="subtitle">Иероглифы / романизация (MoE · Phak-fa-sṳ) → МФА · кириллица · хангыль · Палладий<br class="line2-br"><span class="line2">Голландский · Испанский · Португальский · Бенгальский · Тайский · Грузинский · …</span></p>
       <span class="dialect-tag" id="dialectTag">Hagˋ vunˇ zonˋ vonˉ hiˉ</span>
     </header>
     <div class="card">
@@ -434,7 +434,7 @@
         </div>
       </div>
       <div class="tone-kb" id="toneKeyboard">
-        <span class="tone-kb-label">성조</span>
+        <span class="tone-kb-label">Тоны</span>
         <button type="button" class="tone-btn" data-tone="ˊ" title="ˊ">ˊ</button>
         <button type="button" class="tone-btn" data-tone="ˇ" title="ˇ">ˇ</button>
         <button type="button" class="tone-btn" data-tone="ˋ" title="ˋ">ˋ</button>
@@ -28822,6 +28822,8 @@ function assembleHangul(str){
 }
 /** MoE tone → Hangul contour mark (shown when tone toggle is on) */
 function hangulToneContour(toneMark, isChecked) {
+  // b/d/g with no tone mark → treat as ˉ
+  if (isChecked && !toneMark) toneMark = 'ˉ';
   if (!toneMark) return '';
   if (isChecked) {
     if (toneMark === 'ˉ') return '↗';
@@ -28996,7 +28998,7 @@ function openPolyPopup(seg) {
     num.textContent = String(i + 1);
     const roman = document.createElement('span');
     roman.className = 'poly-opt-roman';
-    roman.textContent = r;
+    roman.textContent = ensureDefaultTone(r);
     btn.appendChild(num);
     btn.appendChild(roman);
     btn.addEventListener('click', () => {
@@ -29064,6 +29066,18 @@ function openPolyPopup(seg) {
   document.addEventListener('keydown', polyPopupKeyHandler, true);
 }
 
+
+/** Append ˉ to any roman syllable that has no tone mark (MoE default). */
+function ensureDefaultTone(roman) {
+  if (!roman || !/[a-zA-Z]/.test(roman)) return roman;
+  // Each roman syllable without an explicit tone mark gets ˉ
+  return roman.replace(/[a-zA-Z]+(?:[ˊˇˋ^+⁺ˉ˙]*)?/g, (tok) => {
+    if (!tok || !/[a-zA-Z]/.test(tok)) return tok;
+    if (/[ˊˇˋ^+⁺ˉ˙]/.test(tok)) return tok;
+    return tok + 'ˉ';
+  });
+}
+
 function renderRomanBox(segments) {
   const box = document.getElementById('out-roman');
   box.innerHTML = '';
@@ -29074,8 +29088,10 @@ function renderRomanBox(segments) {
       const span = document.createElement('span');
       const idx = seg.choiceIdx || 0;
       span.className = 'ambig' + (idx > 0 ? ' alt' : '');
-      span.textContent = seg.text;
-      span.title = (seg.char || '') + ': ' + seg.readings.join(' / ') + ' — нажмите, чтобы выбрать';
+      // show ˉ when reading has no tone mark
+      const readingsShown = (seg.readings || []).map(r => ensureDefaultTone(r));
+      span.textContent = ensureDefaultTone(seg.text);
+      span.title = (seg.char || '') + ': ' + readingsShown.join(' / ') + ' — нажмите, чтобы выбрать';
       span.dataset.choiceKey = seg.choiceKey;
       span.addEventListener('click', (e) => {
         e.preventDefault();
@@ -29083,6 +29099,8 @@ function renderRomanBox(segments) {
         openPolyPopup(seg);
       });
       box.appendChild(span);
+    } else if (seg.type === 'roman') {
+      box.appendChild(document.createTextNode(ensureDefaultTone(seg.text)));
     } else {
       box.appendChild(document.createTextNode(seg.text));
     }
@@ -29224,8 +29242,9 @@ function processSyllableMoeToPfs(syllable) {
   } else {
     // xiyen (default) — table: ˊ→̂  ˇ→̀  ˋ→́  ˉ→Ø  ⁺/(ˉ)→̊  bdgˋ→Ø  bdgˉ→̍
     if (plosive) {
-      if (toneMark === 'ˉ') finalTone = TONE_MARKS_NFD.EIGHTH;           // ◌̍
-      else if (toneMark === 'ˋ' || toneMark === '') finalTone = '';      // Ø
+      // no tone mark on b/d/g → treat as ˉ → ◌̍
+      if (toneMark === 'ˉ' || toneMark === '') finalTone = TONE_MARKS_NFD.EIGHTH; // ◌̍
+      else if (toneMark === 'ˋ') finalTone = '';                               // Ø
       else if (toneMark === 'ˊ') finalTone = TONE_MARKS_NFD.RISING;
       else if (toneMark === 'ˇ') finalTone = TONE_MARKS_NFD.DIPPING;
       else if (toneMark === '⁺' || toneMark === 'ˆ' || toneMark === '^') finalTone = TONE_MARKS_NFD.FIRST;
@@ -29702,7 +29721,7 @@ function convert() {
     for (const line of lines) {
       const segs = hanziToRoman(line);
       lineSegs.push(segs);
-      romanText += segs.map(s => s.text).join('') + '\n';
+      romanText += segs.map(s => ensureDefaultTone(s.text)).join('') + '\n';
     }
     romanText = romanText.replace(/\n$/, '');
     for (let li = 0; li < lineSegs.length; li++) {
@@ -29713,10 +29732,11 @@ function convert() {
     // Convert PFS → MoE: syllable separator "-" becomes space (MoE convention)
     const lines = raw.split(/\r?\n/);
     romanText = lines.map(l => pfsLineToMoe(l).replace(/-/g, ' ').replace(/\s+/g, ' ').trim()).join('\n');
-    segmentsForBox = [{ type: 'text', text: romanText }];
+    segmentsForBox = [{ type: 'text', text: ensureDefaultTone(romanText) }];
   } else {
-    romanText = raw;
-    segmentsForBox = [{ type: 'text', text: raw }];
+    // toneless syllables → ˉ (display + conversion)
+    romanText = ensureDefaultTone(raw);
+    segmentsForBox = [{ type: 'text', text: romanText }];
   }
   renderRomanBox(segmentsForBox);
 
