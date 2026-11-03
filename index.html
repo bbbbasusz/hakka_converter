@@ -28559,8 +28559,50 @@ const vowels = {
 };
 
 function extractTonesFromToken(token) {
-  const toneMatch = token.match(TONE_REGEX);
-  return { base: token.replace(TONE_REGEX, ''), tones: toneMatch || [] };
+  // Keep each tone's position in the letter-only base so it can be re-attached
+  // to the correct syllable after splitIntoSyllables (avoids ˊ/ˇ/ˋ → ˉ misassignment).
+  const tones = [];
+  const positions = []; // index in `base` right after the letter the tone belongs to
+  let base = '';
+  for (let i = 0; i < token.length; i++) {
+    const ch = token[i];
+    if (/[ˊˇˋ^+⁺ˉ˙]/.test(ch)) {
+      tones.push(ch);
+      positions.push(base.length); // tone sits after base[0..length)
+    } else {
+      base += ch;
+    }
+  }
+  return { base, tones, positions };
+}
+/** Map extracted tones onto syllable list using original positions. */
+function assignTonesToSyllables(syls, tones, positions) {
+  const assigned = new Array(syls.length).fill('');
+  if (!syls.length || !tones.length) return assigned;
+  let cum = 0;
+  const bounds = syls.map(s => {
+    const start = cum;
+    cum += ((s.onset || '') + (s.core || '')).replace(TONE_REGEX, '').length;
+    return [start, cum];
+  });
+  for (let t = 0; t < tones.length; t++) {
+    const pos = positions[t] || 0;
+    // tone belongs to the syllable that owns the letter just before it
+    const letterPos = Math.max(0, pos - 1);
+    let placed = false;
+    for (let i = 0; i < bounds.length; i++) {
+      if (letterPos >= bounds[i][0] && letterPos < bounds[i][1]) {
+        assigned[i] = tones[t];
+        placed = true;
+        break;
+      }
+    }
+    if (!placed && bounds.length) {
+      // fallback: last syllable
+      assigned[bounds.length - 1] = tones[t];
+    }
+  }
+  return assigned;
 }
 function splitIntoSyllables(text) {
   const rawLower = text.toLowerCase();
@@ -28626,12 +28668,14 @@ function isCheckedTone(core) {
   return c.endsWith('b') || c.endsWith('d') || c.endsWith('g');
 }
 function convertSequence(seq, mode) {
-  const { base, tones } = extractTonesFromToken(seq);
+  const { base, tones, positions } = extractTonesFromToken(seq);
   const syllableBases = splitIntoSyllables(base);
+  const toneBySyl = assignTonesToSyllables(syllableBases, tones, positions || []);
   const res = { ipa: [], cyr: [], dut: [], esp: [], port: [], ben: [] };
   for (let i = 0; i < syllableBases.length; i++) {
     let { onset, core } = syllableBases[i];
-    const toneMark = tones[i] || 'ˉ';
+    // only default to ˉ when syllable truly has no mark (MoE convention)
+    const toneMark = toneBySyl[i] || 'ˉ';
     let effectiveOnset = onset, effectiveCore = core || '';
     if (onset === 'ng' && effectiveCore.startsWith('i')) effectiveOnset = 'ny';
     if (['k','g','ng'].includes(onset) && isUFolowedByVowel(effectiveCore)) {
@@ -28861,13 +28905,14 @@ function convertHangulLine(line){
       continue;
     }
     // Always split into syllables first so coda never bleeds into next onset
-    const { base, tones } = extractTonesFromToken(p.c);
+    const { base, tones, positions } = extractTonesFromToken(p.c);
     const syls = splitIntoSyllables(base);
+    const toneBySyl = assignTonesToSyllables(syls, tones, positions || []);
     const hangulSyls = [];
     for (let i = 0; i < syls.length; i++) {
       const onset = syls[i].onset || '';
       const core = syls[i].core || '';
-      const tone = tones[i] || '';
+      const tone = toneBySyl[i] || '';
       const bare = (onset + core).replace(TONE_REGEX, '');
       const isChecked = /[bdg]$/i.test(bare);
       const hangul = convertHakkaToHangul(onset + core || p.c);
@@ -29070,9 +29115,8 @@ function openPolyPopup(seg) {
 /** Append ˉ to any roman syllable that has no tone mark (MoE default). */
 function ensureDefaultTone(roman) {
   if (!roman || !/[a-zA-Z]/.test(roman)) return roman;
-  // Each roman syllable without an explicit tone mark gets ˉ
-  return roman.replace(/[a-zA-Z]+(?:[ˊˇˋ^+⁺ˉ˙]*)?/g, (tok) => {
-    if (!tok || !/[a-zA-Z]/.test(tok)) return tok;
+  // Syllable = letters + optional trailing tone mark(s). Never insert per-letter.
+  return roman.replace(/[A-Za-z]+[ˊˇˋ^+⁺ˉ˙]*/g, (tok) => {
     if (/[ˊˇˋ^+⁺ˉ˙]/.test(tok)) return tok;
     return tok + 'ˉ';
   });
@@ -29196,9 +29240,18 @@ function processSyllableMoeToPfs(syllable) {
   const cap = syllable.length && syllable[0]===syllable[0].toUpperCase() && syllable[0]!==syllable[0].toLowerCase();
   let lower=syllable.toLowerCase();
   let toneMark='';
+  // Prefer trailing tone; if marks are embedded (corrupt input), take the last one
   for (const m of ['ˊ','ˇ','ˋ','ˉ','⁺','ˆ','^']) {
     if (lower.endsWith(m)) { toneMark=m; lower=lower.slice(0,-1); break; }
   }
+  if (!toneMark) {
+    const embedded = lower.match(/[ˊˇˋ⁺ˆ^ˉ]/g);
+    if (embedded && embedded.length) {
+      toneMark = embedded[embedded.length - 1];
+    }
+  }
+  // Strip every tone mark from the letter body so mapping can proceed
+  lower = lower.replace(/[ˊˇˋ^+⁺ˉ˙]/g, '');
   let base=lower, finalC='';
   for (const fc of ['ng','m','n','b','d','g','h']) {
     if (base.endsWith(fc)) { finalC=fc; base=base.slice(0,-fc.length); break; }
