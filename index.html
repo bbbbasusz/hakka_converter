@@ -28556,7 +28556,26 @@ const vowels = {
   'ug': { ipa: 'u^k̚', ipa2: 'u^k̚', cyr: 'у^к', cyrTdn: 'у^к', dut: 'o^ek', esp: 'u^c', port: 'u^c', b_d: 'ুক', b_i: 'উক' },
   'iug': { ipa: 'i̯u^k̚', ipa2: 'ju^k̚', cyr: 'ю^к', cyrTdn: 'ыу^к', dut: 'io^ek', esp: 'iu^c', port: 'iu^c', b_d: 'িউক', b_i: 'ইউক' },
   'iig': { ipa: 'ɨ^k̚', ipa2: 'ɨ^k̚', cyr: 'ы^к', cyrTdn: 'ы^к', dut: 'e^uk', esp: 'i^c', port: 'i^c', b_d: 'িক', b_i: 'ইক' },
+  /* ee → IPA ɛ; other scripts merge to e */
+  'ee': { ipa: 'ɛ^', ipa2: 'ɛ^', cyr: 'э^', cyrTdn: 'э^', dut: 'e^', esp: 'e^', port: 'e^', b_d: 'ে', b_i: 'এ' },
+  'eem': { ipa: 'ɛ^m̚', ipa2: 'ɛ^m̚', cyr: 'э^м', cyrTdn: 'э^м', dut: 'e^m', esp: 'e^m', port: 'e^m', b_d: 'েম', b_i: 'এম' },
+  'een': { ipa: 'ɛ^n̚', ipa2: 'ɛ^n̚', cyr: 'э^нь', cyrTdn: 'э^нь', dut: 'e^n', esp: 'e^n', port: 'e^n', b_d: 'েন', b_i: 'এন' },
+  'eeng': { ipa: 'ɛ^ŋ̚', ipa2: 'ɛ^ŋ̚', cyr: 'э^н', cyrTdn: 'э^н', dut: 'e^ng', esp: 'e^ng', port: 'e^ng', b_d: 'েং', b_i: 'এং' },
+  'eeb': { ipa: 'ɛ^p̚', ipa2: 'ɛ^p̚', cyr: 'э^п', cyrTdn: 'э^п', dut: 'e^p', esp: 'e^p', port: 'e^p', b_d: 'েপ', b_i: 'এপ' },
+  'eed': { ipa: 'ɛ^t̚', ipa2: 'ɛ^t̚', cyr: 'э^т', cyrTdn: 'э^т', dut: 'e^t', esp: 'e^t', port: 'e^t', b_d: 'েৎ', b_i: 'এৎ' },
+  'eeg': { ipa: 'ɛ^k̚', ipa2: 'ɛ^k̚', cyr: 'э^к', cyrTdn: 'э^к', dut: 'e^k', esp: 'e^c', port: 'e^c', b_d: 'েক', b_i: 'এক' },
+  /* oo → IPA ɔ; other scripts merge to o */
+  'oo': { ipa: 'ɔ^', ipa2: 'ɔ^', cyr: 'о^', cyrTdn: 'о^', dut: 'o^', esp: 'o^', port: 'o^', b_d: 'ো', b_i: 'ও' },
+  'oom': { ipa: 'ɔ^m̚', ipa2: 'ɔ^m̚', cyr: 'о^м', cyrTdn: 'о^м', dut: 'o^m', esp: 'o^m', port: 'o^m', b_d: 'োম', b_i: 'ওম' },
+  'oon': { ipa: 'ɔ^n̚', ipa2: 'ɔ^n̚', cyr: 'о^нь', cyrTdn: 'о^нь', dut: 'o^n', esp: 'o^n', port: 'o^n', b_d: 'োন', b_i: 'ওন' },
+  'oong': { ipa: 'ɔ^ŋ̚', ipa2: 'ɔ^ŋ̚', cyr: 'о^н', cyrTdn: 'о^н', dut: 'o^ng', esp: 'o^ng', port: 'o^ng', b_d: 'োং', b_i: 'ওং' },
+  'oob': { ipa: 'ɔ^p̚', ipa2: 'ɔ^p̚', cyr: 'о^п', cyrTdn: 'о^п', dut: 'o^p', esp: 'o^p', port: 'o^p', b_d: 'োপ', b_i: 'ওপ' },
+  'ood': { ipa: 'ɔ^t̚', ipa2: 'ɔ^t̚', cyr: 'о^т', cyrTdn: 'о^т', dut: 'o^t', esp: 'o^t', port: 'o^t', b_d: 'োৎ', b_i: 'ওৎ' },
+  'oog': { ipa: 'ɔ^k̚', ipa2: 'ɔ^k̚', cyr: 'о^к', cyrTdn: 'о^к', dut: 'o^k', esp: 'o^c', port: 'o^c', b_d: 'োক', b_i: 'ওক' },
+  /* er → IPA ɤ; Hangul ㅓ; other scripts ≈ e */
+  'er': { ipa: 'ɤ^', ipa2: 'ɤ^', cyr: 'э^', cyrTdn: 'э^', dut: 'e^', esp: 'e^', port: 'e^', b_d: 'ে', b_i: 'এ' },
 };
+
 
 function extractTonesFromToken(token) {
   // Keep each tone's position in the letter-only base so it can be re-attached
@@ -28749,7 +28768,7 @@ function convertSequence(seq, mode) {
     }
     return out;
   }
-  const ipaSep = mode === 'no-space' ? '.' : ' ';
+  const ipaSep = mode === 'no-space' ? '' : '.';
   return {
     ipa: res.ipa.join(ipaSep),
     cyr: joinCyrWithHardSign(res.cyr),
@@ -28880,8 +28899,8 @@ function hangulToneContour(toneMark, isChecked) {
     'ˊ': '↘↗',
     'ˇ': '↘',
     '⁺': '→',
-    'ˆ': '→',
-    '^': '→',
+    'ˆ': '→↘',
+    '^': '→↘',
     '+': '→',
   };
   return map[toneMark] || '';
@@ -28942,14 +28961,14 @@ function convertRomanLine(line) {
   for (const p of parts) {
     if (p.t === 'text') {
       if (joinedMode) {
-        // IPA: syllable boundary marker '.' instead of spaces
-        const ipaBit = /\S/.test(p.c) ? p.c : (prevWasSeq ? '.' : '');
-        acc.ipa.push(ipaBit);
-        // other scripts: drop pure whitespace when joining
-        const otherBit = /\S/.test(p.c) ? p.c : '';
-        for (const k of ['cyr','dut','esp','port','ben']) acc[k].push(otherBit);
+        // no-space: drop pure whitespace for all scripts (IPA has no separator)
+        const bit = /\S/.test(p.c) ? p.c : '';
+        for (const k of Object.keys(acc)) acc[k].push(bit);
       } else {
-        for (const k of Object.keys(acc)) acc[k].push(p.c);
+        // spaces on: IPA uses '.' as syllable separator instead of blank space
+        const ipaBit = /\S/.test(p.c) ? p.c : (prevWasSeq ? '.' : p.c);
+        acc.ipa.push(ipaBit);
+        for (const k of ['cyr','dut','esp','port','ben']) acc[k].push(p.c);
       }
       if (!/\S/.test(p.c) && p.c.length > 0) prevCyrEndsConsonant = null;
       if (/\S/.test(p.c)) prevWasSeq = false;
@@ -28963,8 +28982,8 @@ function convertRomanLine(line) {
           if (idx >= 0) acc.cyr[idx] = acc.cyr[idx] + 'ъ';
         }
       }
-      // Adjacent sequences with no text between: IPA still needs '.'
-      if (joinedMode && prevWasSeq) {
+      // Adjacent sequences with no text between: when spaces ON, IPA needs '.'
+      if (!joinedMode && prevWasSeq) {
         acc.ipa.push('.');
       }
       for (const k of Object.keys(acc)) acc[k].push(r[k]);
@@ -28977,7 +28996,7 @@ function convertRomanLine(line) {
   }
   return Object.fromEntries(Object.entries(acc).map(([k, v]) => {
     let s = v.join('');
-    if (k === 'ipa' && joinedMode) s = s.replace(/\.+/g, '.').replace(/^\.|\.$/g, '');
+    if (k === 'ipa') { s = s.replace(/\s*\.\s*/g, '.').replace(/\.+/g, '.').replace(/^\.|\.$/g, ''); if (joinedMode) s = s.replace(/\./g, ''); }
     return [k, s];
   }));
 }
@@ -29379,7 +29398,8 @@ const extraMaps = {
     b:'ป',p:'พ',m:'ม',f:'ฟ',v:'ว',d:'ต',t:'ท',n:'น',l:'ล',g:'ก',k:'ค',ng:'ง',h:'ฮ',
     z:'จ',c:'ฉ',s:'ส',j:'จ',q:'ฉ',x:'ซ',zh:'จ',ch:'ฉ',sh:'ช',r:'ร',w:'ว',y:'ย',
     a:'า',e:'เ',i:'ิ',o:'โ',u:'ุ',ii:'ื',ü:'ื',ai:'ัย',ei:'เอย',au:'าว',ou:'โอ',
-    an:'ัน',en:'เอน',in:'ิน',on:'อน',un:'ุน',ang:'ัง',eng:'เอง',ing:'ิง',ong:'อง',ung:'ุง'
+    an:'ัน',en:'เอน',in:'ิน',on:'อน',un:'ุน',ang:'ัง',eng:'เอง',ing:'ิง',ong:'อง',ung:'ุง',
+    ɛ:'แ',ɔ:'อ',ɤ:'เอ',ee:'แ',oo:'อ',er:'เอ'
   },
   geo: {
     b:'ბ',p:'ფ',m:'მ',f:'ფ',v:'ვ',d:'დ',t:'თ',n:'ნ',l:'ლ',g:'გ',k:'ქ',ng:'ნგ',h:'ჰ',
@@ -29897,6 +29917,10 @@ function mapLineToExtra(line, script) {
   const map = extraMaps[script] || {};
   const r = convertRomanLine(line);
   let s = (r.ipa || line).replace(/[ʰʷ̯̩̌̀̂́̄̚]/g,'').toLowerCase();
+  // Thai keeps open ɛ/ɔ distinction; other scripts merge ee→e, oo→o
+  if (script !== 'thai') {
+    s = s.replace(/ɛ/g, 'e').replace(/ɔ/g, 'o').replace(/ɤ/g, 'e');
+  }
   let mapped = '';
   let i = 0;
   const keys = Object.keys(map).sort((a,b)=>b.length-a.length);
